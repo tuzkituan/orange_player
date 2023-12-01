@@ -53,6 +53,9 @@ class _SongsViewState extends State<SongsView> {
   Widget build(BuildContext context) {
     PlayerProvider playerProvider = Provider.of<PlayerProvider>(context);
     List<SongModel> songList = playerProvider.songList;
+    int? currentIndex = playerProvider.audioPlayer.currentIndex;
+    SongModel? currentSong =
+        currentIndex != null ? songList[currentIndex] : null;
 
     return Scaffold(
       appBar: AppBar(
@@ -76,9 +79,8 @@ class _SongsViewState extends State<SongsView> {
                     title: Text(
                       songList[index].title,
                       style: TextStyle(
-                        color: playerProvider.currentSong != null
-                            ? playerProvider.currentSong!.id ==
-                                    songList[index].id
+                        color: currentSong != null
+                            ? currentSong.id == songList[index].id
                                 ? Colors.orange
                                 : null
                             : null,

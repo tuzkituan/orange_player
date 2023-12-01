@@ -11,11 +11,16 @@ class PlayerBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     PlayerProvider playerProvider = Provider.of<PlayerProvider>(context);
-    SongModel? currentSong = playerProvider.currentSong;
-    bool isPlaying = playerProvider.isPlaying;
+    List<SongModel> songList = playerProvider.songList;
+    int? currentIndex = playerProvider.audioPlayer.currentIndex;
+    SongModel? currentSong =
+        currentIndex != null ? songList[currentIndex] : null;
+
+    bool isPlaying = playerProvider.audioPlayer.playing;
     bool canNext = playerProvider.getNextSong() != null;
     bool canPrevious = playerProvider.getPreviousSong() != null;
 
+    print("CURRENT SONG: $currentSong");
     if (currentSong == null) {
       return const SizedBox.shrink();
     }

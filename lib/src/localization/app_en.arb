@@ -1,0 +1,6 @@
+{
+  "appTitle": "orange_player",
+  "@appTitle": {
+    "description": "The title of the application"
+  }
+}

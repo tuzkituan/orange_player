@@ -6,9 +6,10 @@ Color LIGHT_BG = Colors.white;
 
 // COMPONENT
 Color DARK_COMPONENT_BG = Colors.black;
-Color LIGHT_COMPONENT_BG = Colors.white;
+Color LIGHT_COMPONENT_BG = Colors.grey.shade300;
 
 // ACCENT
 const Color PRIMARY_COLOR = Colors.orange;
-const Color BUTTON_COLOR = PRIMARY_COLOR;
+const Color DARK_BUTTON_COLOR = Colors.white;
+const Color LIGHT_BUTTON_COLOR = Colors.black;
 Color DISABLED_BUTTON_COLOR = Colors.grey[800]!;

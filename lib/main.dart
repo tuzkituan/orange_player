@@ -4,8 +4,8 @@ import 'package:orange_player/src/providers/player_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'src/app.dart';
-import 'src/settings/settings_controller.dart';
-import 'src/settings/settings_service.dart';
+import 'src/views/home/settings/settings_controller.dart';
+import 'src/views/home/settings/settings_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,7 +14,7 @@ void main() async {
     statusBarBrightness: Brightness.dark,
     statusBarIconBrightness: Brightness.light,
     systemNavigationBarIconBrightness: Brightness.dark,
-    systemNavigationBarColor: Colors.black,
+    systemNavigationBarColor: Colors.transparent,
     systemNavigationBarDividerColor: Colors.transparent,
   ));
 

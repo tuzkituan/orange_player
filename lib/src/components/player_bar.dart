@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import 'package:orange_player/src/player/player_view.dart';
+import 'package:orange_player/src/components/song_thumbnail.dart';
+import 'package:orange_player/src/views/player/player_view.dart';
 import 'package:orange_player/src/providers/player_provider.dart';
 import 'package:orange_player/src/theme/colors.dart';
+import 'package:orange_player/src/theme/padding.dart';
 import 'package:provider/provider.dart';
 
 class PlayerBar extends StatelessWidget {
@@ -11,16 +13,12 @@ class PlayerBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     PlayerProvider playerProvider = Provider.of<PlayerProvider>(context);
-    List<SongModel> songList = playerProvider.songList;
-    int? currentIndex = playerProvider.audioPlayer.currentIndex;
-    SongModel? currentSong =
-        currentIndex != null ? songList[currentIndex] : null;
+    SongModel? currentSong = playerProvider.currentSong;
 
     bool isPlaying = playerProvider.audioPlayer.playing;
-    bool canNext = playerProvider.getNextSong() != null;
-    bool canPrevious = playerProvider.getPreviousSong() != null;
+    // bool canNext = playerProvider.getNextSong() != null;
+    // bool canPrevious = playerProvider.getPreviousSong() != null;
 
-    print("CURRENT SONG: $currentSong");
     if (currentSong == null) {
       return const SizedBox.shrink();
     }
@@ -31,9 +29,10 @@ class PlayerBar extends StatelessWidget {
       child: Container(
         height: 70,
         decoration: BoxDecoration(
-          color: Theme.of(context).brightness == Brightness.dark
-              ? DARK_COMPONENT_BG
-              : LIGHT_COMPONENT_BG,
+          color: DARK_COMPONENT_BG,
+          borderRadius: const BorderRadius.all(
+            Radius.circular(12.0),
+          ),
         ),
         margin: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
         padding: EdgeInsets.zero,
@@ -43,8 +42,8 @@ class PlayerBar extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.only(
-                left: 16,
-                right: 16,
+                left: COMPONENT_PADDING,
+                right: COMPONENT_PADDING,
                 top: 0,
                 bottom: 0,
               ),
@@ -52,9 +51,12 @@ class PlayerBar extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  QueryArtworkWidget(
-                    id: currentSong.id,
-                    type: ArtworkType.AUDIO,
+                  SizedBox(
+                    width: 36,
+                    height: 36,
+                    child: SongThumbnail(
+                      currentSong: currentSong,
+                    ),
                   ),
                   const SizedBox(
                     width: 12,
@@ -65,22 +67,25 @@ class PlayerBar extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          currentSong.title,
+                          currentSong != null ? currentSong.title : "Unknown",
                           style: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 14,
                             fontWeight: FontWeight.bold,
                             color: Colors.orange,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(
-                          height: 4,
+                          height: 2,
                         ),
                         Text(
-                          currentSong.artist ?? "Unknown",
+                          currentSong != null
+                              ? currentSong.artist ?? "Unknown"
+                              : "Unknown",
                           style: const TextStyle(
-                            fontSize: 11,
+                            fontSize: 12,
                             fontWeight: FontWeight.w400,
+                            color: Colors.white,
                           ),
                         ),
                       ],
@@ -92,15 +97,12 @@ class PlayerBar extends StatelessWidget {
                   Row(
                     children: [
                       renderMediaButton(
-                        icon: Icons.skip_previous,
-                        onPressed: () {
-                          playerProvider.previous();
-                        },
-                        color:
-                            canPrevious ? BUTTON_COLOR : DISABLED_BUTTON_COLOR,
+                        icon: Icons.favorite_border_outlined,
+                        onPressed: () {},
+                        color: DARK_BUTTON_COLOR,
                       ),
                       const SizedBox(
-                        width: 4.0,
+                        width: 8.0,
                       ),
                       renderMediaButton(
                         icon: isPlaying ? Icons.pause : Icons.play_arrow,
@@ -110,16 +112,16 @@ class PlayerBar extends StatelessWidget {
                               : playerProvider.resume();
                         },
                       ),
-                      const SizedBox(
-                        width: 4.0,
-                      ),
-                      renderMediaButton(
-                        icon: Icons.skip_next,
-                        onPressed: () {
-                          playerProvider.next();
-                        },
-                        color: canNext ? BUTTON_COLOR : DISABLED_BUTTON_COLOR,
-                      ),
+                      // const SizedBox(
+                      //   width: 8.0,
+                      // ),
+                      // renderMediaButton(
+                      //   icon: Icons.skip_next,
+                      //   onPressed: () {
+                      //     playerProvider.next();
+                      //   },
+                      //   color: canNext ? BUTTON_COLOR : DISABLED_BUTTON_COLOR,
+                      // ),
                     ],
                   )
                 ],
@@ -131,18 +133,23 @@ class PlayerBar extends StatelessWidget {
     );
   }
 
-  Widget renderMediaButton(
-      {required IconData icon, void Function()? onPressed, Color? color}) {
+  Widget renderMediaButton({
+    required IconData icon,
+    void Function()? onPressed,
+    Color? color,
+    Color? bgColor,
+  }) {
     return InkWell(
       onTap: onPressed,
       child: Container(
         padding: const EdgeInsets.all(6.0),
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(30)),
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(Radius.circular(30)),
+          color: bgColor ?? Colors.transparent,
         ),
         child: Icon(
           icon,
-          color: color ?? BUTTON_COLOR,
+          color: color ?? DARK_BUTTON_COLOR,
         ),
       ),
     );

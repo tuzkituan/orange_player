@@ -5,9 +5,15 @@ import 'package:on_audio_query/on_audio_query.dart';
 class PlayerProvider with ChangeNotifier {
   final AudioPlayer audioPlayer = AudioPlayer();
   List<SongModel> songList = [];
+  SongModel? currentSong;
+  bool isPlaying = false;
 
-  int? get currentSongIndex {
-    return audioPlayer.currentIndex;
+  PlayerProvider() {
+    audioPlayer.processingStateStream.listen((processingState) {
+      if (processingState == ProcessingState.completed) {
+        next();
+      }
+    });
   }
 
   void setSongList({List<SongModel> songs = const []}) {
@@ -15,61 +21,84 @@ class PlayerProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void reset() {
+    currentSong = null;
+    isPlaying = false;
+    notifyListeners();
+  }
+
   void play({required SongModel song}) async {
-    notifyListeners();
-    var playlist = ConcatenatingAudioSource(
-      useLazyPreparation: true,
-      // shuffleOrder: DefaultShuffleOrder(),
-      children:
-          songList.map((e) => AudioSource.uri(Uri.parse(e.uri!))).toList(),
-    );
-    int currentIndex = songList.indexOf(song);
-    await audioPlayer.setAudioSource(
-      playlist,
-      initialIndex: currentIndex,
-      initialPosition: Duration.zero,
-    );
-    notifyListeners();
-    await audioPlayer.play();
+    currentSong = song;
+    String filePath = song.uri!;
+    try {
+      await audioPlayer.setUrl(filePath);
+      isPlaying = true;
+      notifyListeners();
+      await audioPlayer.play();
+    } catch (e) {
+      reset();
+      print(e);
+    }
   }
 
   void resume() async {
-    notifyListeners();
-    await audioPlayer.play();
+    try {
+      isPlaying = true;
+      notifyListeners();
+      await audioPlayer.play();
+    } catch (e) {
+      reset();
+      print(e);
+    }
   }
 
   void pause() async {
+    isPlaying = false;
     notifyListeners();
     await audioPlayer.pause();
   }
 
   SongModel? getPreviousSong() {
-    if (currentSongIndex == 0) {
+    try {
+      if (currentSong == null) return null;
+      if (songList.indexOf(currentSong!) == 0) {
+        return null;
+      }
+      return songList[songList.indexOf(currentSong!) - 1];
+    } catch (e) {
       return null;
     }
-    if (currentSongIndex == null) {
-      return null;
-    }
-    return songList[currentSongIndex! - 1];
   }
 
   SongModel? getNextSong() {
-    if (currentSongIndex == songList.length - 1) {
+    try {
+      if (currentSong == null) return null;
+      if (songList.indexOf(currentSong!) == songList.length - 1) {
+        return null;
+      }
+      return songList[songList.indexOf(currentSong!) + 1];
+    } catch (e) {
       return null;
     }
-    if (currentSongIndex == null) {
-      return null;
-    }
-    return songList[currentSongIndex! + 1];
   }
 
   void next() async {
+    SongModel? nextSong = getNextSong();
+    if (nextSong == null) {
+      pause();
+      // currentSong = null;
+      return;
+    }
+    play(song: nextSong);
     notifyListeners();
-    audioPlayer.seekToNext();
   }
 
   void previous() async {
+    SongModel? previousSong = getPreviousSong();
+    if (previousSong == null) {
+      return;
+    }
+    play(song: previousSong);
     notifyListeners();
-    audioPlayer.seekToPrevious();
   }
 }

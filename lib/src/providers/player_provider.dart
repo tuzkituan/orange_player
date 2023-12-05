@@ -5,6 +5,7 @@ import 'package:on_audio_query/on_audio_query.dart';
 class PlayerProvider with ChangeNotifier {
   final AudioPlayer audioPlayer = AudioPlayer();
   List<SongModel> songList = [];
+  List<String> favoriteIds = [];
   SongModel? currentSong;
   bool isPlaying = false;
 
@@ -24,6 +25,15 @@ class PlayerProvider with ChangeNotifier {
   void reset() {
     currentSong = null;
     isPlaying = false;
+    notifyListeners();
+  }
+
+  void setFavorite({required String id}) {
+    if (favoriteIds.contains(id)) {
+      favoriteIds.remove(id);
+    } else {
+      favoriteIds.add(id);
+    }
     notifyListeners();
   }
 

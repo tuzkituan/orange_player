@@ -124,7 +124,7 @@ class _HomeState extends State<Home> {
           const Positioned(
             left: COMPONENT_PADDING / 2,
             right: COMPONENT_PADDING / 2,
-            bottom: COMPONENT_PADDING / 2,
+            bottom: COMPONENT_PADDING,
             child: PlayerBar(),
           ),
         ],

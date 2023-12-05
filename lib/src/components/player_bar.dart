@@ -14,7 +14,8 @@ class PlayerBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     PlayerProvider playerProvider = Provider.of<PlayerProvider>(context);
-    SongModel? currentSong = playerProvider.currentSong;
+    final currentSong = playerProvider.currentSong;
+
     List<String> favoriteIds = playerProvider.favoriteIds;
 
     bool isPlaying = playerProvider.audioPlayer.playing;
@@ -39,7 +40,7 @@ class PlayerBar extends StatelessWidget {
             Radius.circular(12.0),
           ),
         ),
-        margin: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+        // margin: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
         padding: EdgeInsets.zero,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

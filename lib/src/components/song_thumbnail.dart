@@ -3,7 +3,7 @@ import 'package:on_audio_query/on_audio_query.dart';
 import 'package:orange_player/src/theme/variables.dart';
 
 class SongThumbnail extends StatelessWidget {
-  final SongModel? currentSong;
+  final dynamic currentSong;
   final double? width;
   final OnAudioQuery? controller;
   final bool? isCircle;
@@ -41,7 +41,7 @@ class SongThumbnail extends StatelessWidget {
           fit: BoxFit.cover,
         ),
       ),
-      id: currentSong!.id,
+      id: int.parse(currentSong!.id.toString()),
       type: ArtworkType.AUDIO,
       artworkWidth: width - CONTAINER_PADDING * 2,
     );

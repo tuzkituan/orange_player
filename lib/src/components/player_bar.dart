@@ -1,10 +1,11 @@
+import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:orange_player/src/components/song_thumbnail.dart';
 import 'package:orange_player/src/views/player/player_view.dart';
 import 'package:orange_player/src/providers/player_provider.dart';
 import 'package:orange_player/src/theme/colors.dart';
-import 'package:orange_player/src/theme/padding.dart';
+import 'package:orange_player/src/theme/variables.dart';
 import 'package:provider/provider.dart';
 
 class PlayerBar extends StatelessWidget {
@@ -14,10 +15,13 @@ class PlayerBar extends StatelessWidget {
   Widget build(BuildContext context) {
     PlayerProvider playerProvider = Provider.of<PlayerProvider>(context);
     SongModel? currentSong = playerProvider.currentSong;
+    List<String> favoriteIds = playerProvider.favoriteIds;
 
     bool isPlaying = playerProvider.audioPlayer.playing;
-    // bool canNext = playerProvider.getNextSong() != null;
-    // bool canPrevious = playerProvider.getPreviousSong() != null;
+    bool isFavorite = currentSong != null
+        ? favoriteIds.contains(currentSong.id.toString())
+        : false;
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     if (currentSong == null) {
       return const SizedBox.shrink();
@@ -27,7 +31,8 @@ class PlayerBar extends StatelessWidget {
         Navigator.restorablePushNamed(context, PlayerView.routeName);
       },
       child: Container(
-        height: 70,
+        // height: PLAYER_BAR_HEIGHT,
+        clipBehavior: Clip.hardEdge,
         decoration: BoxDecoration(
           color: DARK_COMPONENT_BG,
           borderRadius: const BorderRadius.all(
@@ -41,6 +46,7 @@ class PlayerBar extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
+              height: PLAYER_BAR_HEIGHT,
               padding: const EdgeInsets.only(
                 left: COMPONENT_PADDING,
                 right: COMPONENT_PADDING,
@@ -56,6 +62,7 @@ class PlayerBar extends StatelessWidget {
                     height: 36,
                     child: SongThumbnail(
                       currentSong: currentSong,
+                      isCircle: true,
                     ),
                   ),
                   const SizedBox(
@@ -67,11 +74,11 @@ class PlayerBar extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          currentSong != null ? currentSong.title : "Unknown",
+                          currentSong.title,
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
-                            color: Colors.orange,
+                            color: PRIMARY_COLOR,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -79,9 +86,7 @@ class PlayerBar extends StatelessWidget {
                           height: 2,
                         ),
                         Text(
-                          currentSong != null
-                              ? currentSong.artist ?? "Unknown"
-                              : "Unknown",
+                          currentSong.artist ?? "Unknown",
                           style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
@@ -97,9 +102,15 @@ class PlayerBar extends StatelessWidget {
                   Row(
                     children: [
                       renderMediaButton(
-                        icon: Icons.favorite_border_outlined,
-                        onPressed: () {},
-                        color: DARK_BUTTON_COLOR,
+                        icon: isFavorite
+                            ? Icons.favorite
+                            : Icons.favorite_border_outlined,
+                        onPressed: () {
+                          playerProvider.setFavorite(
+                            id: currentSong.id.toString(),
+                          );
+                        },
+                        color: isFavorite ? PRIMARY_COLOR : DARK_BUTTON_COLOR,
                       ),
                       const SizedBox(
                         width: 8.0,
@@ -112,19 +123,46 @@ class PlayerBar extends StatelessWidget {
                               : playerProvider.resume();
                         },
                       ),
-                      // const SizedBox(
-                      //   width: 8.0,
-                      // ),
-                      // renderMediaButton(
-                      //   icon: Icons.skip_next,
-                      //   onPressed: () {
-                      //     playerProvider.next();
-                      //   },
-                      //   color: canNext ? BUTTON_COLOR : DISABLED_BUTTON_COLOR,
-                      // ),
                     ],
                   )
                 ],
+              ),
+            ),
+            Transform.translate(
+              offset: const Offset(0, 1),
+              child: StreamBuilder(
+                stream: playerProvider.audioPlayer.positionStream,
+                builder: (context, snapshot1) {
+                  final Duration duration = snapshot1.hasData
+                      ? snapshot1.data as Duration
+                      : const Duration(seconds: 0);
+                  return StreamBuilder(
+                    stream: playerProvider.audioPlayer.bufferedPositionStream,
+                    builder: (context, snapshot2) {
+                      final Duration bufferedDuration = snapshot2.hasData
+                          ? snapshot2.data as Duration
+                          : const Duration(seconds: 0);
+                      return ProgressBar(
+                        progress: duration,
+                        total: playerProvider.audioPlayer.duration ??
+                            const Duration(seconds: 0),
+                        buffered: bufferedDuration,
+                        timeLabelPadding: 0,
+                        timeLabelLocation: TimeLabelLocation.none,
+                        progressBarColor: PRIMARY_COLOR,
+                        baseBarColor:
+                            isDarkMode ? Colors.grey[900] : Colors.grey[400],
+                        bufferedBarColor:
+                            isDarkMode ? Colors.grey[900] : Colors.grey[400],
+                        barHeight: 2,
+                        thumbRadius: 0,
+                        onSeek: (duration) async {
+                          await playerProvider.audioPlayer.seek(duration);
+                        },
+                      );
+                    },
+                  );
+                },
               ),
             ),
           ],

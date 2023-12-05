@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:orange_player/src/views/player/player_view.dart';
-import 'package:orange_player/src/views/home/home.dart';
 import 'package:orange_player/src/theme/colors.dart';
+import 'package:orange_player/src/views/home/home.dart';
+import 'package:orange_player/src/views/player/player_view.dart';
 import 'views/home/settings/settings_controller.dart';
-import 'views/home/settings/settings.dart';
 
 /// The Widget that configures your application.
 class MyApp extends StatelessWidget {

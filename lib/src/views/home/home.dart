@@ -3,7 +3,7 @@ import 'package:on_audio_query/on_audio_query.dart';
 import 'package:orange_player/src/components/player_bar.dart';
 import 'package:orange_player/src/providers/player_provider.dart';
 import 'package:orange_player/src/theme/colors.dart';
-import 'package:orange_player/src/theme/padding.dart';
+import 'package:orange_player/src/theme/variables.dart';
 import 'package:orange_player/src/views/home/settings/settings_controller.dart';
 import 'package:orange_player/src/views/home/settings/settings.dart';
 import 'package:orange_player/src/views/home/songs/songs.dart';
@@ -87,9 +87,17 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
+      // appBar: AppBar(
+      //   backgroundColor: Colors.transparent,
+      //   title: renderTitle(),
+      //   surfaceTintColor: Colors.black,
+      //   // scrolledUnderElevation: 0,
+      // ),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: renderTitle(),
+        elevation: 0,
+        toolbarHeight: 0,
+        // scrolledUnderElevation: 0,
       ),
       body: Stack(
         children: [
@@ -108,6 +116,7 @@ class _HomeState extends State<Home> {
             ),
           if (index == 2)
             SafeArea(
+              top: false,
               child: Settings(
                 controller: widget.settingsController,
               ),
@@ -120,31 +129,38 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        currentIndex: index,
-        selectedItemColor: PRIMARY_COLOR,
-        enableFeedback: false,
-        onTap: (value) {
-          setState(() {
-            index = value;
-          });
-        },
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.music_note_outlined),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite_rounded),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: '',
-          ),
-        ],
+      bottomNavigationBar: Theme(
+        data: Theme.of(context).copyWith(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+        ),
+        child: BottomNavigationBar(
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          currentIndex: index,
+          selectedItemColor: PRIMARY_COLOR,
+          unselectedItemColor: ACCENT_3,
+          enableFeedback: false,
+          onTap: (value) {
+            setState(() {
+              index = value;
+            });
+          },
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.music_note_outlined),
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.favorite_rounded),
+              label: '',
+            ),
+            // BottomNavigationBarItem(
+            //   icon: Icon(Icons.settings),
+            //   label: '',
+            // ),
+          ],
+        ),
       ),
     );
   }

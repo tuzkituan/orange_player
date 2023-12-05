@@ -4,7 +4,7 @@ import 'package:on_audio_query/on_audio_query.dart';
 import 'package:orange_player/src/components/song_thumbnail.dart';
 import 'package:orange_player/src/providers/player_provider.dart';
 import 'package:orange_player/src/theme/colors.dart';
-import 'package:orange_player/src/theme/padding.dart';
+import 'package:orange_player/src/theme/variables.dart';
 import 'package:provider/provider.dart';
 
 class PlayerView extends StatelessWidget {
@@ -16,7 +16,11 @@ class PlayerView extends StatelessWidget {
   Widget build(BuildContext context) {
     PlayerProvider playerProvider = Provider.of<PlayerProvider>(context);
     SongModel? currentSong = playerProvider.currentSong;
+    List<String> favoriteIds = playerProvider.favoriteIds;
 
+    bool isFavorite = currentSong != null
+        ? favoriteIds.contains(currentSong.id.toString())
+        : false;
     bool isPlaying = playerProvider.audioPlayer.playing;
     bool canNext = playerProvider.getNextSong() != null;
     bool canPrevious = playerProvider.getPreviousSong() != null;
@@ -53,7 +57,7 @@ class PlayerView extends StatelessWidget {
             const SizedBox(
               height: 20,
             ),
-            Container(
+            SizedBox(
               height: 70,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -69,6 +73,7 @@ class PlayerView extends StatelessWidget {
                               Theme.of(context).textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
+                                    color: PRIMARY_COLOR,
                                   ),
                           textAlign: TextAlign.center,
                           overflow: TextOverflow.ellipsis,
@@ -84,7 +89,7 @@ class PlayerView extends StatelessWidget {
                                 .titleMedium
                                 ?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                                  fontSize: 14,
                                 ),
                             textAlign: TextAlign.center,
                             overflow: TextOverflow.ellipsis,
@@ -96,10 +101,15 @@ class PlayerView extends StatelessWidget {
                     width: 48,
                   ),
                   IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.favorite_border_outlined,
-                    ),
+                    icon: isFavorite
+                        ? const Icon(Icons.favorite)
+                        : const Icon(Icons.favorite_border_outlined),
+                    onPressed: () {
+                      playerProvider.setFavorite(
+                        id: currentSong.id.toString(),
+                      );
+                    },
+                    color: isFavorite ? PRIMARY_COLOR : DARK_BUTTON_COLOR,
                   )
                 ],
               ),

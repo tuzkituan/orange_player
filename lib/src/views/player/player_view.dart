@@ -1,6 +1,6 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:on_audio_query/on_audio_query.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:orange_player/src/components/song_thumbnail.dart';
 import 'package:orange_player/src/providers/player_provider.dart';
 import 'package:orange_player/src/theme/colors.dart';
@@ -12,21 +12,46 @@ class PlayerView extends StatelessWidget {
 
   static const routeName = '/player';
 
+  IconData getRepeatIcon({required LoopMode loopMode}) {
+    switch (loopMode) {
+      case LoopMode.off:
+        return Icons.repeat;
+      case LoopMode.all:
+        return Icons.repeat;
+      case LoopMode.one:
+        return Icons.repeat_one;
+    }
+  }
+
+  Color getActiveColor({
+    required bool value,
+    required bool isDarkMode,
+    bool isDisabled = false,
+  }) {
+    if (isDisabled) return DISABLED_BUTTON_COLOR;
+    Color buttonColor = isDarkMode ? DARK_BUTTON_COLOR : LIGHT_BUTTON_COLOR;
+    if (value) {
+      return PRIMARY_COLOR;
+    } else {
+      return buttonColor;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     PlayerProvider playerProvider = Provider.of<PlayerProvider>(context);
-    SongModel? currentSong = playerProvider.currentSong;
+    final currentSong = playerProvider.currentSong;
     List<String> favoriteIds = playerProvider.favoriteIds;
 
     bool isFavorite = currentSong != null
         ? favoriteIds.contains(currentSong.id.toString())
         : false;
     bool isPlaying = playerProvider.audioPlayer.playing;
-    bool canNext = playerProvider.getNextSong() != null;
-    bool canPrevious = playerProvider.getPreviousSong() != null;
 
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    Color buttonColor = isDarkMode ? DARK_BUTTON_COLOR : LIGHT_BUTTON_COLOR;
+
+    LoopMode loopMode = playerProvider.loopMode;
+    bool isShuffle = playerProvider.isShuffle;
 
     if (currentSong == null) {
       return const SizedBox.shrink();
@@ -161,8 +186,13 @@ class PlayerView extends StatelessWidget {
                 children: [
                   renderMediaButton(
                     icon: Icons.shuffle,
-                    onPressed: () {},
-                    color: buttonColor,
+                    onPressed: () {
+                      playerProvider.toggleShuffle();
+                    },
+                    color: getActiveColor(
+                      isDarkMode: isDarkMode,
+                      value: isShuffle,
+                    ),
                     size: 28,
                   ),
                   const SizedBox(
@@ -173,7 +203,10 @@ class PlayerView extends StatelessWidget {
                     onPressed: () {
                       playerProvider.previous();
                     },
-                    color: canPrevious ? buttonColor : DISABLED_BUTTON_COLOR,
+                    color: getActiveColor(
+                      isDarkMode: isDarkMode,
+                      value: false,
+                    ),
                   ),
                   const SizedBox(
                     width: 4,
@@ -196,15 +229,23 @@ class PlayerView extends StatelessWidget {
                     onPressed: () {
                       playerProvider.next();
                     },
-                    color: canNext ? buttonColor : DISABLED_BUTTON_COLOR,
+                    color: getActiveColor(
+                      isDarkMode: isDarkMode,
+                      value: false,
+                    ),
                   ),
                   const SizedBox(
                     width: 4,
                   ),
                   renderMediaButton(
-                    icon: Icons.repeat_outlined,
-                    onPressed: () {},
-                    color: buttonColor,
+                    icon: getRepeatIcon(loopMode: loopMode),
+                    onPressed: () {
+                      playerProvider.toggleLoop();
+                    },
+                    color: getActiveColor(
+                      isDarkMode: isDarkMode,
+                      value: loopMode != LoopMode.off,
+                    ),
                     size: 28,
                   ),
                 ],

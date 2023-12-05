@@ -1,30 +1,87 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 class PlayerProvider with ChangeNotifier {
   final AudioPlayer audioPlayer = AudioPlayer();
   List<SongModel> songList = [];
   List<String> favoriteIds = [];
-  SongModel? currentSong;
-  bool isPlaying = false;
+  dynamic currentSong;
+  int? currentSongIndex;
 
-  PlayerProvider() {
-    audioPlayer.processingStateStream.listen((processingState) {
-      if (processingState == ProcessingState.completed) {
-        next();
-      }
+  LoopMode loopMode = LoopMode.off;
+  bool isShuffle = false;
+
+  // PlayerProvider() {
+  //   audioPlayer.processingStateStream.listen((processingState) {
+  //     if (processingState == ProcessingState.ready) {
+  //       currentSong = audioPlayer.sequenceState!.currentSource!.tag;
+  //       notifyListeners();
+  //     }
+  //   });
+  // }
+
+  void setSongList({List<SongModel> songs = const []}) async {
+    songList = songs;
+
+    final playlist = ConcatenatingAudioSource(
+      useLazyPreparation: true,
+      shuffleOrder: DefaultShuffleOrder(),
+      children: songs
+          .map(
+            (song) => AudioSource.uri(
+              Uri.parse(song.uri!),
+              tag: MediaItem(
+                // Specify a unique ID for each media item:
+                id: song.id.toString(),
+                // Metadata to display in the notification:
+                album: song.album,
+                title: song.title,
+                artist: song.artist,
+                artUri: Uri.parse(song.uri!),
+              ),
+            ),
+          )
+          .toList(),
+    );
+    await audioPlayer.setAudioSource(
+      playlist,
+      initialIndex: 0,
+      initialPosition: Duration.zero,
+    );
+    audioPlayer.sequenceStateStream.listen((sequenceState) {
+      final currentIndex = sequenceState!.currentIndex;
+      currentSong = sequenceState.sequence[currentIndex].tag;
     });
+    notifyListeners();
+    audioPlayer.play();
   }
 
-  void setSongList({List<SongModel> songs = const []}) {
-    songList = songs;
+  void toggleShuffle() {
+    audioPlayer.setShuffleModeEnabled(!isShuffle);
+    isShuffle = !isShuffle;
+    notifyListeners();
+  }
+
+  void toggleLoop() {
+    switch (loopMode) {
+      case LoopMode.off:
+        loopMode = LoopMode.one;
+        break;
+      case LoopMode.one:
+        loopMode = LoopMode.all;
+        break;
+      case LoopMode.all:
+        loopMode = LoopMode.off;
+        break;
+    }
+    audioPlayer.setLoopMode(loopMode);
     notifyListeners();
   }
 
   void reset() {
     currentSong = null;
-    isPlaying = false;
     notifyListeners();
   }
 
@@ -38,11 +95,9 @@ class PlayerProvider with ChangeNotifier {
   }
 
   void play({required SongModel song}) async {
-    currentSong = song;
-    String filePath = song.uri!;
     try {
-      await audioPlayer.setUrl(filePath);
-      isPlaying = true;
+      int findIndex = songList.indexWhere((element) => element.id == song.id);
+      await audioPlayer.seek(Duration.zero, index: findIndex);
       notifyListeners();
       await audioPlayer.play();
     } catch (e) {
@@ -53,7 +108,6 @@ class PlayerProvider with ChangeNotifier {
 
   void resume() async {
     try {
-      isPlaying = true;
       notifyListeners();
       await audioPlayer.play();
     } catch (e) {
@@ -63,52 +117,17 @@ class PlayerProvider with ChangeNotifier {
   }
 
   void pause() async {
-    isPlaying = false;
     notifyListeners();
     await audioPlayer.pause();
   }
 
-  SongModel? getPreviousSong() {
-    try {
-      if (currentSong == null) return null;
-      if (songList.indexOf(currentSong!) == 0) {
-        return null;
-      }
-      return songList[songList.indexOf(currentSong!) - 1];
-    } catch (e) {
-      return null;
-    }
-  }
-
-  SongModel? getNextSong() {
-    try {
-      if (currentSong == null) return null;
-      if (songList.indexOf(currentSong!) == songList.length - 1) {
-        return null;
-      }
-      return songList[songList.indexOf(currentSong!) + 1];
-    } catch (e) {
-      return null;
-    }
-  }
-
   void next() async {
-    SongModel? nextSong = getNextSong();
-    if (nextSong == null) {
-      pause();
-      // currentSong = null;
-      return;
-    }
-    play(song: nextSong);
+    await audioPlayer.seekToNext();
     notifyListeners();
   }
 
   void previous() async {
-    SongModel? previousSong = getPreviousSong();
-    if (previousSong == null) {
-      return;
-    }
-    play(song: previousSong);
+    await audioPlayer.seekToPrevious();
     notifyListeners();
   }
 }

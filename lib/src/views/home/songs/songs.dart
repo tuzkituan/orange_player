@@ -52,30 +52,31 @@ class _SongsState extends State<Songs> {
     required void Function({required String id}) onSetFavorite,
   }) {
     showModalBottomSheet(
-        context: context,
-        backgroundColor: DARK_BG,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4.0),
-        ),
-        builder: (BuildContext context) {
-          return GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child: Column(
+      context: context,
+      isScrollControlled: false, // set this to true
+      backgroundColor: DARK_BG,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4.0),
+      ),
+      builder: (_) {
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: .25,
+          minChildSize: .25,
+          maxChildSize: .25,
+          builder: (BuildContext context, ScrollController scrollController) {
+            return Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 ListTile(
-                  minVerticalPadding: 0,
                   leading: Icon(
                     isFavorite
                         ? Icons.favorite
                         : Icons.favorite_border_outlined,
                   ),
-                  title: Text(isFavorite
-                      ? "Remove from Favorites"
-                      : "Add to Favorites"),
+                  title: Text(
+                    isFavorite ? "Remove from Favorites" : "Add to Favorites",
+                  ),
                   onTap: () {
                     onSetFavorite(id: song!.id.toString());
                     Navigator.pop(context);
@@ -90,9 +91,11 @@ class _SongsState extends State<Songs> {
                   },
                 ),
               ],
-            ),
-          );
-        });
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -103,7 +106,10 @@ class _SongsState extends State<Songs> {
     void Function({required String id}) onSetFavorite =
         playerProvider.setFavorite;
 
-    SongModel? currentSong = playerProvider.currentSong;
+    final currentSong = playerProvider.audioPlayer.playing
+        ? playerProvider.audioPlayer.sequenceState!.currentSource!.tag
+        : null;
+
     double screenHeight = MediaQuery.of(context).size.height;
 
     List<SongModel> searchedSongList = songList;
@@ -114,129 +120,126 @@ class _SongsState extends State<Songs> {
           .toList();
     }
 
-    return Stack(
-      children: [
-        ListView(
-          padding: EdgeInsets.only(
-            // top: CONTAINER_PADDING * 2,
-            bottom: PLAYER_BAR_HEIGHT + CONTAINER_PADDING,
-          ),
-          children: [
-            SizedBox(
-              height: screenHeight * 0.2,
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    left: 0,
-                    child: Container(
-                      height: screenHeight,
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [PRIMARY_COLOR, Colors.transparent],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          stops: [0.0, 0.25],
-                        ),
+    return RefreshIndicator(
+      onRefresh: widget.pullRefresh!,
+      child: ListView(
+        padding: EdgeInsets.only(
+          // top: CONTAINER_PADDING * 2,
+          bottom: PLAYER_BAR_HEIGHT + CONTAINER_PADDING,
+        ),
+        children: [
+          SizedBox(
+            height: screenHeight * 0.2,
+            child: Stack(
+              children: [
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  left: 0,
+                  child: Container(
+                    height: screenHeight,
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [PRIMARY_COLOR, Colors.transparent],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        stops: [0.0, 0.25],
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: CONTAINER_PADDING * 2),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: COMPONENT_PADDING,
-                          ),
-                          child: SearchInput(
-                            controller: searchController,
-                            onChanged: onSearchChanged,
-                          ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: CONTAINER_PADDING * 2),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: COMPONENT_PADDING,
                         ),
-                        const SizedBox(
-                          height: CONTAINER_PADDING,
+                        child: SearchInput(
+                          controller: searchController,
+                          onChanged: onSearchChanged,
                         ),
-                        const TitleBar(title: "Songs"),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(
+                        height: CONTAINER_PADDING,
+                      ),
+                      const TitleBar(title: "Songs"),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            RefreshIndicator(
-              onRefresh: widget.pullRefresh!,
-              child: widget.hasPermission == false
-                  ? Center(
-                      child: noAccessToLibraryWidget(),
-                    )
-                  : ListView.builder(
-                      shrinkWrap: true,
-                      padding: EdgeInsets.zero,
-                      physics: const ClampingScrollPhysics(),
-                      itemCount: searchedSongList.length,
-                      itemBuilder: (context, index) {
-                        bool isSelected = currentSong != null
-                            ? currentSong.id == searchedSongList[index].id
-                            : false;
+          ),
+          widget.hasPermission == false
+              ? Center(
+                  child: noAccessToLibraryWidget(),
+                )
+              : ListView.builder(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.zero,
+                  physics: const ClampingScrollPhysics(),
+                  itemCount: searchedSongList.length,
+                  itemBuilder: (context, index) {
+                    bool isSelected = currentSong != null
+                        ? currentSong.id.toString() ==
+                            searchedSongList[index].id.toString()
+                        : false;
 
-                        bool isFavorite = currentSong != null
-                            ? favoriteIds.contains(currentSong.id.toString())
-                            : false;
+                    bool isFavorite = currentSong != null
+                        ? favoriteIds.contains(currentSong.id.toString())
+                        : false;
 
-                        return ListTile(
-                          minVerticalPadding: 0,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: COMPONENT_PADDING,
-                            vertical: 0,
-                          ),
-                          title: Text(
-                            searchedSongList[index].title,
-                            style: TextStyle(
-                              color: currentSong != null
-                                  ? isSelected
-                                      ? PRIMARY_COLOR
-                                      : null
-                                  : null,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                          subtitle: Text(
-                              searchedSongList[index].artist ?? "No Artist"),
-                          leading: SizedBox(
-                            width: 44,
-                            height: 44,
-                            child: SongThumbnail(
-                              // controller: _audioQuery,
-                              isCircle: true,
-                              currentSong: searchedSongList[index],
-                            ),
-                          ),
-                          onTap: () {
-                            FocusManager.instance.primaryFocus?.unfocus();
-                            playerProvider.play(song: searchedSongList[index]);
-                          },
-                          trailing: IconButton(
-                            icon: const Icon(Icons.more_vert),
-                            onPressed: () {
-                              displayMenu(
-                                song: searchedSongList[index],
-                                isFavorite: isFavorite,
-                                onSetFavorite: onSetFavorite,
-                              );
-                            },
-                          ),
-                        );
+                    return ListTile(
+                      minVerticalPadding: 0,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: COMPONENT_PADDING,
+                        vertical: 0,
+                      ),
+                      title: Text(
+                        searchedSongList[index].title,
+                        style: TextStyle(
+                          color: currentSong != null
+                              ? isSelected
+                                  ? PRIMARY_COLOR
+                                  : null
+                              : null,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                      subtitle:
+                          Text(searchedSongList[index].artist ?? "No Artist"),
+                      leading: SizedBox(
+                        width: 44,
+                        height: 44,
+                        child: SongThumbnail(
+                          // controller: _audioQuery,
+                          isCircle: true,
+                          currentSong: searchedSongList[index],
+                        ),
+                      ),
+                      onTap: () {
+                        FocusManager.instance.primaryFocus?.unfocus();
+                        playerProvider.play(song: searchedSongList[index]);
                       },
-                    ),
-            ),
-          ],
-        ),
-      ],
+                      trailing: IconButton(
+                        icon: const Icon(Icons.more_vert),
+                        onPressed: () {
+                          displayMenu(
+                            song: searchedSongList[index],
+                            isFavorite: isFavorite,
+                            onSetFavorite: onSetFavorite,
+                          );
+                        },
+                      ),
+                    );
+                  },
+                ),
+        ],
+      ),
     );
   }
 

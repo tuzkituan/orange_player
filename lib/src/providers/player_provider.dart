@@ -13,14 +13,14 @@ class PlayerProvider with ChangeNotifier {
   LoopMode loopMode = LoopMode.off;
   bool isShuffle = false;
 
-  PlayerProvider() {
-    audioPlayer.processingStateStream.listen((processingState) {
-      if (processingState == ProcessingState.ready) {
-        currentSong = audioPlayer.sequenceState!.currentSource!.tag;
-        notifyListeners();
-      }
-    });
-  }
+  // PlayerProvider() {
+  //   audioPlayer.processingStateStream.listen((processingState) {
+  //     if (processingState == ProcessingState.ready) {
+  //       currentSong = audioPlayer.sequenceState!.currentSource!.tag;
+  //       notifyListeners();
+  //     }
+  //   });
+  // }
 
   void setSongList({List<SongModel> songs = const []}) async {
     songList = songs;
@@ -50,7 +50,12 @@ class PlayerProvider with ChangeNotifier {
       initialIndex: 0,
       initialPosition: Duration.zero,
     );
+    audioPlayer.sequenceStateStream.listen((sequenceState) {
+      final currentIndex = sequenceState!.currentIndex;
+      currentSong = sequenceState.sequence[currentIndex].tag;
+    });
     notifyListeners();
+    audioPlayer.play();
   }
 
   void toggleShuffle() {

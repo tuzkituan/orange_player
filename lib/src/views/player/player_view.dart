@@ -1,7 +1,6 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:on_audio_query/on_audio_query.dart';
 import 'package:orange_player/src/components/song_thumbnail.dart';
 import 'package:orange_player/src/providers/player_provider.dart';
 import 'package:orange_player/src/theme/colors.dart';
@@ -41,10 +40,7 @@ class PlayerView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     PlayerProvider playerProvider = Provider.of<PlayerProvider>(context);
-    final currentSong = playerProvider.audioPlayer.playing
-        ? playerProvider.audioPlayer.sequenceState!.currentSource!.tag
-        : null;
-
+    final currentSong = playerProvider.currentSong;
     List<String> favoriteIds = playerProvider.favoriteIds;
 
     bool isFavorite = currentSong != null

@@ -2,15 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:on_audio_query/on_audio_query.dart';
-import 'package:orange_player/src/player/player_view.dart';
-import 'package:orange_player/src/providers/player_provider.dart';
-import 'package:orange_player/src/songs/songs_view.dart';
 import 'package:orange_player/src/theme/colors.dart';
-import 'package:provider/provider.dart';
-
-import 'settings/settings_controller.dart';
-import 'settings/settings_view.dart';
+import 'package:orange_player/src/views/home/home.dart';
+import 'package:orange_player/src/views/player/player_view.dart';
+import 'views/home/settings/settings_controller.dart';
 
 /// The Widget that configures your application.
 class MyApp extends StatelessWidget {
@@ -85,13 +80,11 @@ class MyApp extends StatelessWidget {
               settings: routeSettings,
               builder: (BuildContext context) {
                 switch (routeSettings.name) {
-                  case SettingsView.routeName:
-                    return SettingsView(controller: settingsController);
                   case PlayerView.routeName:
                     return const PlayerView();
-                  case SongsView.routeName:
+                  case Home.routeName:
                   default:
-                    return SongsView();
+                    return Home(settingsController: settingsController);
                 }
               },
             );

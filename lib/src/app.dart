@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:orange_player/src/theme/colors.dart';
 import 'package:orange_player/src/views/home/home.dart';
+import 'package:orange_player/src/views/home/playlists/playlist_details.dart';
 import 'package:orange_player/src/views/player/player_view.dart';
 import 'views/home/settings/settings_controller.dart';
 
@@ -82,6 +83,8 @@ class MyApp extends StatelessWidget {
                 switch (routeSettings.name) {
                   case PlayerView.routeName:
                     return const PlayerView();
+                  case PlaylistDetails.routeName:
+                    return const PlaylistDetails();
                   case Home.routeName:
                   default:
                     return Home(settingsController: settingsController);

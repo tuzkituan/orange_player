@@ -1,4 +1,4 @@
 const double CONTAINER_PADDING = 24.0;
 const double COMPONENT_PADDING = 16.0;
-double PLAYER_BAR_HEIGHT = 65;
+double PLAYER_BAR_HEIGHT = 55;
 double BORDER_RADIUS = 8;

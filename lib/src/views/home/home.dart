@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:orange_player/src/components/player_bar.dart';
+import 'package:orange_player/src/components/title_bar.dart';
 import 'package:orange_player/src/providers/player_provider.dart';
 import 'package:orange_player/src/theme/colors.dart';
 import 'package:orange_player/src/theme/variables.dart';
@@ -78,12 +79,7 @@ class _HomeState extends State<Home> {
         break;
     }
 
-    return Text(
-      title,
-      style: const TextStyle(
-        fontWeight: FontWeight.w700,
-      ),
-    );
+    return TitleBar(title: title);
   }
 
   @override
@@ -117,9 +113,9 @@ class _HomeState extends State<Home> {
               ),
             ),
           const Positioned(
-            left: COMPONENT_PADDING / 2,
-            right: COMPONENT_PADDING / 2,
-            bottom: COMPONENT_PADDING,
+            left: COMPONENT_PADDING / 4,
+            right: COMPONENT_PADDING / 4,
+            bottom: COMPONENT_PADDING / 2,
             child: SafeArea(
               child: PlayerBar(),
             ),
@@ -153,9 +149,9 @@ class _HomeState extends State<Home> {
                 enableFeedback: false,
                 selectedFontSize: 13,
                 unselectedFontSize: 13,
-                showSelectedLabels: false,
-                showUnselectedLabels: false,
-                iconSize: 28,
+                showSelectedLabels: true,
+                showUnselectedLabels: true,
+                iconSize: 24,
                 onTap: (value) {
                   setState(() {
                     index = value;

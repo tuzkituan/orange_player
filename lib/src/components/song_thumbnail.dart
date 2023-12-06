@@ -19,7 +19,7 @@ class SongThumbnail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double width = this.width ?? 50;
-    double borderRadius = isCircle == true ? 100 : BORDER_RADIUS;
+    double borderRadius = isCircle == true ? 100 : BORDER_RADIUS / 2;
 
     if (currentSong == null) return const SizedBox.shrink();
 

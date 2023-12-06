@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
     var baseTheme = ThemeData(brightness: brightness);
 
     return baseTheme.copyWith(
-        textTheme: GoogleFonts.robotoMonoTextTheme(baseTheme.textTheme),
+        textTheme: GoogleFonts.manropeTextTheme(baseTheme.textTheme),
         scaffoldBackgroundColor:
             brightness == Brightness.dark ? DARK_BG : LIGHT_BG,
         appBarTheme: AppBarTheme(

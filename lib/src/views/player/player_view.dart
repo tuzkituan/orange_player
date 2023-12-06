@@ -53,8 +53,10 @@ class PlayerView extends StatelessWidget {
 
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    LoopMode loopMode = playerProvider.loopMode;
-    bool isShuffle = playerProvider.isShuffle;
+    LoopMode loopMode =
+        playerProvider.audioPlayer.sequenceState?.loopMode ?? LoopMode.off;
+    bool isShuffle =
+        playerProvider.audioPlayer.sequenceState?.shuffleModeEnabled ?? false;
 
     if (currentSong == null) {
       return const SizedBox.shrink();
@@ -76,7 +78,7 @@ class PlayerView extends StatelessWidget {
         padding: const EdgeInsets.all(CONTAINER_PADDING),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [PRIMARY_COLOR.withOpacity(0.4), Colors.transparent],
+            colors: [PRIMARY_COLOR.withOpacity(0.5), Colors.transparent],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             stops: const [0.0, 1.0],
@@ -204,7 +206,7 @@ class PlayerView extends StatelessWidget {
                   renderMediaButton(
                     icon: Icons.shuffle,
                     onPressed: () {
-                      playerProvider.toggleShuffle();
+                      playerProvider.toggleShuffle(value: !isShuffle);
                     },
                     color: getActiveColor(
                       isDarkMode: isDarkMode,
@@ -257,7 +259,9 @@ class PlayerView extends StatelessWidget {
                   renderMediaButton(
                     icon: getRepeatIcon(loopMode: loopMode),
                     onPressed: () {
-                      playerProvider.toggleLoop();
+                      playerProvider.toggleLoop(
+                        currentLoopMode: loopMode,
+                      );
                     },
                     color: getActiveColor(
                       isDarkMode: isDarkMode,

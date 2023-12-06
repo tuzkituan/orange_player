@@ -17,9 +17,6 @@ class PlayerProvider with ChangeNotifier {
   dynamic currentSong;
   int? currentSongIndex;
 
-  LoopMode loopMode = LoopMode.off;
-  bool isShuffle = false;
-
   // PlayerProvider() {
   //   audioPlayer.processingStateStream.listen((processingState) {
   //     if (processingState == ProcessingState.ready) {
@@ -30,61 +27,62 @@ class PlayerProvider with ChangeNotifier {
   // }
 
   void setSongList({List<SongModel> songs = const []}) async {
-    songList = songs;
+    if (songList.isEmpty) {
+      songList = songs;
 
-    final playlist = ConcatenatingAudioSource(
-      useLazyPreparation: true,
-      shuffleOrder: DefaultShuffleOrder(),
-      children: songs
-          .map(
-            (song) => AudioSource.uri(
-              Uri.parse(song.uri!),
-              tag: MediaItem(
-                // Specify a unique ID for each media item:
-                id: song.id.toString(),
-                // Metadata to display in the notification:
-                album: song.album,
-                title: song.title,
-                artist: song.artist,
-                artUri: Uri.parse(song.uri!),
+      final playlist = ConcatenatingAudioSource(
+        useLazyPreparation: true,
+        shuffleOrder: DefaultShuffleOrder(),
+        children: songs
+            .map(
+              (song) => AudioSource.uri(
+                Uri.parse(song.uri!),
+                tag: MediaItem(
+                  // Specify a unique ID for each media item:
+                  id: song.id.toString(),
+                  // Metadata to display in the notification:
+                  album: song.album,
+                  title: song.title,
+                  artist: song.artist,
+                  artUri: Uri.parse(song.uri!),
+                ),
               ),
-            ),
-          )
-          .toList(),
-    );
-    await audioPlayer.setAudioSource(
-      playlist,
-      initialIndex: 0,
-      initialPosition: Duration.zero,
-    );
-    audioPlayer.sequenceStateStream.listen((sequenceState) {
-      final currentIndex = sequenceState!.currentIndex;
-      currentSong = sequenceState.sequence[currentIndex].tag;
+            )
+            .toList(),
+      );
+      await audioPlayer.setAudioSource(
+        playlist,
+        initialIndex: 0,
+        initialPosition: Duration.zero,
+      );
+      audioPlayer.sequenceStateStream.listen((sequenceState) {
+        final currentIndex = sequenceState!.currentIndex;
+        currentSong = sequenceState.sequence[currentIndex].tag;
+        notifyListeners();
+      });
       notifyListeners();
-      audioPlayer.play();
-    });
+    }
+  }
+
+  void toggleShuffle({bool value = false}) {
+    audioPlayer.setShuffleModeEnabled(value);
     notifyListeners();
   }
 
-  void toggleShuffle() {
-    audioPlayer.setShuffleModeEnabled(!isShuffle);
-    isShuffle = !isShuffle;
-    notifyListeners();
-  }
-
-  void toggleLoop() {
-    switch (loopMode) {
+  void toggleLoop({LoopMode currentLoopMode = LoopMode.off}) {
+    LoopMode nextLoopMode;
+    switch (currentLoopMode) {
       case LoopMode.off:
-        loopMode = LoopMode.one;
+        nextLoopMode = LoopMode.one;
         break;
       case LoopMode.one:
-        loopMode = LoopMode.all;
+        nextLoopMode = LoopMode.all;
         break;
       case LoopMode.all:
-        loopMode = LoopMode.off;
+        nextLoopMode = LoopMode.off;
         break;
     }
-    audioPlayer.setLoopMode(loopMode);
+    audioPlayer.setLoopMode(nextLoopMode);
     notifyListeners();
   }
 

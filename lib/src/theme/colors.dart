@@ -9,7 +9,8 @@ Color DARK_COMPONENT_BG = Colors.black;
 Color LIGHT_COMPONENT_BG = Colors.grey.shade300;
 
 // ACCENT
-const Color PRIMARY_COLOR = Color(0xFFFF5B22);
+// const Color PRIMARY_COLOR = Color(0xFFFF5B22);
+const Color PRIMARY_COLOR = Colors.green;
 const Color ACCENT_1 = Color(0xFFFF9130);
 const Color ACCENT_2 = Color(0xFFFECDA6);
 const Color ACCENT_3 = Color(0xFFA9A9A9);

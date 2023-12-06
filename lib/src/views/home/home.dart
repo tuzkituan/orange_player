@@ -1,9 +1,12 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:orange_player/src/components/player_bar.dart';
 import 'package:orange_player/src/providers/player_provider.dart';
 import 'package:orange_player/src/theme/colors.dart';
 import 'package:orange_player/src/theme/variables.dart';
+import 'package:orange_player/src/views/home/playlists/playlists.dart';
 import 'package:orange_player/src/views/home/settings/settings_controller.dart';
 import 'package:orange_player/src/views/home/settings/settings.dart';
 import 'package:orange_player/src/views/home/songs/songs.dart';
@@ -64,7 +67,7 @@ class _HomeState extends State<Home> {
     String title = '';
     switch (index) {
       case 1:
-        title = 'Favorites';
+        title = 'Playlist';
         break;
       case 2:
         title = 'Settings';
@@ -86,80 +89,85 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      // appBar: AppBar(
-      //   backgroundColor: Colors.transparent,
-      //   title: renderTitle(),
-      //   surfaceTintColor: Colors.black,
-      //   // scrolledUnderElevation: 0,
-      // ),
+      extendBody: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        elevation: 0,
-        toolbarHeight: 0,
+        title: renderTitle(),
+        surfaceTintColor: Colors.black,
         // scrolledUnderElevation: 0,
       ),
       body: Stack(
         children: [
           if (index == 0)
-            SafeArea(
-              top: false,
-              child: Songs(
-                hasPermission: _hasPermission,
-                checkAndRequestPermissions: checkAndRequestPermissions,
-                pullRefresh: _pullRefresh,
-              ),
+            Songs(
+              hasPermission: _hasPermission,
+              checkAndRequestPermissions: checkAndRequestPermissions,
+              pullRefresh: _pullRefresh,
             ),
-          if (index == 1)
-            SafeArea(
-              child: Container(),
-            ),
+          if (index == 1) const Playlists(),
           if (index == 2)
-            SafeArea(
-              top: false,
-              child: Settings(
-                controller: widget.settingsController,
-              ),
+            Settings(
+              controller: widget.settingsController,
             ),
           const Positioned(
             left: COMPONENT_PADDING / 2,
             right: COMPONENT_PADDING / 2,
             bottom: COMPONENT_PADDING,
-            child: PlayerBar(),
+            child: SafeArea(
+              child: PlayerBar(),
+            ),
           ),
         ],
       ),
-      bottomNavigationBar: Theme(
-        data: Theme.of(context).copyWith(
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-        ),
-        child: BottomNavigationBar(
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          currentIndex: index,
-          selectedItemColor: PRIMARY_COLOR,
-          unselectedItemColor: ACCENT_3,
-          enableFeedback: false,
-          onTap: (value) {
-            setState(() {
-              index = value;
-            });
-          },
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.music_note_outlined),
-              label: '',
+      bottomNavigationBar: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
+          child: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.black12, Colors.white10],
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                stops: [0, 0.8],
+              ),
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.favorite_rounded),
-              label: '',
+            child: Theme(
+              data: Theme.of(context).copyWith(
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+              ),
+              child: BottomNavigationBar(
+                currentIndex: index,
+                selectedItemColor: PRIMARY_COLOR,
+                backgroundColor: const Color(0x00FFFFFF),
+                elevation: 0,
+                type: BottomNavigationBarType.fixed,
+                unselectedItemColor: ACCENT_3,
+                enableFeedback: false,
+                selectedFontSize: 13,
+                unselectedFontSize: 13,
+                onTap: (value) {
+                  setState(() {
+                    index = value;
+                  });
+                },
+                items: const <BottomNavigationBarItem>[
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.music_note_outlined),
+                    label: 'Songs',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.playlist_add_check),
+                    label: 'Playlists',
+                  ),
+                  // BottomNavigationBarItem(
+                  //   icon: Icon(Icons.settings),
+                  //   label: '',
+                  // ),
+                ],
+              ),
             ),
-            // BottomNavigationBarItem(
-            //   icon: Icon(Icons.settings),
-            //   label: '',
-            // ),
-          ],
+          ),
         ),
       ),
     );

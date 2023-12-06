@@ -2,11 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:orange_player/src/models/playlist_model.dart';
 
 class PlayerProvider with ChangeNotifier {
   final AudioPlayer audioPlayer = AudioPlayer();
   List<SongModel> songList = [];
-  List<String> favoriteIds = [];
+
+  MyPlaylistModel likedPlaylist = MyPlaylistModel(
+    name: 'Liked Songs',
+    songIds: [],
+    id: 'liked',
+  );
+
   dynamic currentSong;
   int? currentSongIndex;
 
@@ -53,9 +60,10 @@ class PlayerProvider with ChangeNotifier {
     audioPlayer.sequenceStateStream.listen((sequenceState) {
       final currentIndex = sequenceState!.currentIndex;
       currentSong = sequenceState.sequence[currentIndex].tag;
+      notifyListeners();
     });
     notifyListeners();
-    audioPlayer.play();
+    await audioPlayer.play();
   }
 
   void toggleShuffle() {
@@ -86,10 +94,10 @@ class PlayerProvider with ChangeNotifier {
   }
 
   void setFavorite({required String id}) {
-    if (favoriteIds.contains(id)) {
-      favoriteIds.remove(id);
+    if (likedPlaylist.songIds.contains(id)) {
+      likedPlaylist.songIds.remove(id);
     } else {
-      favoriteIds.add(id);
+      likedPlaylist.songIds.add(id);
     }
     notifyListeners();
   }

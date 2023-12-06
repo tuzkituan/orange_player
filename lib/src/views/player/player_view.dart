@@ -2,6 +2,7 @@ import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:orange_player/src/components/song_thumbnail.dart';
+import 'package:orange_player/src/models/playlist_model.dart';
 import 'package:orange_player/src/providers/player_provider.dart';
 import 'package:orange_player/src/theme/colors.dart';
 import 'package:orange_player/src/theme/variables.dart';
@@ -41,7 +42,9 @@ class PlayerView extends StatelessWidget {
   Widget build(BuildContext context) {
     PlayerProvider playerProvider = Provider.of<PlayerProvider>(context);
     final currentSong = playerProvider.currentSong;
-    List<String> favoriteIds = playerProvider.favoriteIds;
+
+    MyPlaylistModel likedPlaylist = playerProvider.likedPlaylist;
+    List<String> favoriteIds = likedPlaylist.songIds;
 
     bool isFavorite = currentSong != null
         ? favoriteIds.contains(currentSong.id.toString())
@@ -57,7 +60,9 @@ class PlayerView extends StatelessWidget {
       return const SizedBox.shrink();
     }
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: Text(
           'Playing from Library'.toUpperCase(),
           style: const TextStyle(
@@ -69,6 +74,14 @@ class PlayerView extends StatelessWidget {
       ),
       body: Container(
         padding: const EdgeInsets.all(CONTAINER_PADDING),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [PRIMARY_COLOR.withOpacity(0.4), Colors.transparent],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            stops: const [0.0, 1.0],
+          ),
+        ),
         child: Column(
           children: [
             Expanded(
@@ -166,8 +179,12 @@ class PlayerView extends StatelessWidget {
                           bufferedBarColor:
                               isDarkMode ? Colors.grey[900] : Colors.grey[400],
                           thumbColor: isDarkMode ? Colors.white : PRIMARY_COLOR,
-                          barHeight: 2,
-                          thumbRadius: 4,
+                          barHeight: 3,
+                          thumbRadius: 5,
+                          timeLabelTextStyle: const TextStyle(
+                            fontSize: 15,
+                          ),
+                          timeLabelPadding: 6,
                           onSeek: (duration) async {
                             await playerProvider.audioPlayer.seek(duration);
                           },
@@ -175,14 +192,14 @@ class PlayerView extends StatelessWidget {
                       });
                 }),
             const SizedBox(
-              height: 24,
+              height: 32,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(
-                horizontal: 32,
+                horizontal: 24,
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   renderMediaButton(
                     icon: Icons.shuffle,
@@ -252,7 +269,7 @@ class PlayerView extends StatelessWidget {
               ),
             ),
             const SizedBox(
-              height: 48,
+              height: 56,
             ),
           ],
         ),
@@ -271,7 +288,7 @@ class PlayerView extends StatelessWidget {
       onTap: onPressed,
       splashColor: Colors.transparent,
       child: Container(
-        padding: const EdgeInsets.all(8.0),
+        padding: EdgeInsets.all(BORDER_RADIUS),
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(30)),
           color: bgColor ?? Colors.transparent,
@@ -279,7 +296,7 @@ class PlayerView extends StatelessWidget {
         child: Icon(
           icon,
           color: color ?? DARK_BUTTON_COLOR,
-          size: size ?? 36,
+          size: size ?? 44,
         ),
       ),
     );

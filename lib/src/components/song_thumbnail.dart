@@ -19,7 +19,7 @@ class SongThumbnail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double width = this.width ?? 50;
-    double borderRadius = isCircle == true ? 100 : 4;
+    double borderRadius = isCircle == true ? 100 : BORDER_RADIUS;
 
     if (currentSong == null) return const SizedBox.shrink();
 
@@ -35,8 +35,8 @@ class SongThumbnail extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(borderRadius),
         ),
-        child: Image.network(
-          'https://files.readme.io/f2e91bb-portalDocs-sonosApp-defaultArtAlone.png',
+        child: Image.asset(
+          'assets/images/thumbnail.png',
           width: width - CONTAINER_PADDING * 2,
           fit: BoxFit.cover,
         ),

@@ -5,6 +5,7 @@ import 'package:on_audio_query/on_audio_query.dart';
 import 'package:orange_player/src/components/search_input.dart';
 import 'package:orange_player/src/components/song_thumbnail.dart';
 import 'package:orange_player/src/components/title_bar.dart';
+import 'package:orange_player/src/models/playlist_model.dart';
 import 'package:orange_player/src/providers/player_provider.dart';
 import 'package:orange_player/src/theme/colors.dart';
 import 'package:orange_player/src/theme/variables.dart';
@@ -61,21 +62,19 @@ class _SongsState extends State<Songs> {
       builder: (_) {
         return DraggableScrollableSheet(
           expand: false,
-          initialChildSize: .25,
-          minChildSize: .25,
-          maxChildSize: .25,
+          initialChildSize: .28,
+          minChildSize: .28,
+          maxChildSize: .28,
           builder: (BuildContext context, ScrollController scrollController) {
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 ListTile(
-                  leading: Icon(
-                    isFavorite
-                        ? Icons.favorite
-                        : Icons.favorite_border_outlined,
-                  ),
+                  leading: Icon(isFavorite == true
+                      ? Icons.favorite
+                      : Icons.favorite_border_outlined),
                   title: Text(
-                    isFavorite ? "Remove from Favorites" : "Add to Favorites",
+                    isFavorite ? "Unlike" : "Like",
                   ),
                   onTap: () {
                     onSetFavorite(id: song!.id.toString());
@@ -84,8 +83,8 @@ class _SongsState extends State<Songs> {
                 ),
                 ListTile(
                   minVerticalPadding: 0,
-                  leading: const Icon(Icons.close),
-                  title: const Text('Delete'),
+                  leading: const Icon(Icons.add),
+                  title: const Text('Add to playlist'),
                   onTap: () {
                     Navigator.pop(context);
                   },
@@ -102,15 +101,14 @@ class _SongsState extends State<Songs> {
   Widget build(BuildContext context) {
     PlayerProvider playerProvider = Provider.of<PlayerProvider>(context);
     List<SongModel> songList = playerProvider.songList;
-    List<String> favoriteIds = playerProvider.favoriteIds;
+
+    MyPlaylistModel likedPlaylist = playerProvider.likedPlaylist;
+    List<String> favoriteIds = likedPlaylist.songIds;
+
     void Function({required String id}) onSetFavorite =
         playerProvider.setFavorite;
 
-    final currentSong = playerProvider.audioPlayer.playing
-        ? playerProvider.audioPlayer.sequenceState!.currentSource!.tag
-        : null;
-
-    double screenHeight = MediaQuery.of(context).size.height;
+    final currentSong = playerProvider.currentSong;
 
     List<SongModel> searchedSongList = songList;
     if (searchKey != null) {
@@ -120,125 +118,129 @@ class _SongsState extends State<Songs> {
           .toList();
     }
 
-    return RefreshIndicator(
-      onRefresh: widget.pullRefresh!,
-      child: ListView(
-        padding: EdgeInsets.only(
-          // top: CONTAINER_PADDING * 2,
-          bottom: PLAYER_BAR_HEIGHT + CONTAINER_PADDING,
-        ),
-        children: [
-          SizedBox(
-            height: screenHeight * 0.2,
-            child: Stack(
-              children: [
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  left: 0,
-                  child: Container(
-                    height: screenHeight,
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [PRIMARY_COLOR, Colors.transparent],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        stops: [0.0, 0.25],
-                      ),
+    return Container(
+      decoration: const BoxDecoration(
+          // gradient: LinearGradient(
+          //   colors: [PRIMARY_COLOR, Colors.transparent],
+          //   begin: Alignment.topCenter,
+          //   end: Alignment.bottomCenter,
+          //   stops: [0.0, 0.25],
+          // ),
+          ),
+      child: RefreshIndicator(
+        onRefresh: widget.pullRefresh!,
+        child: ListView(
+          padding: EdgeInsets.only(
+            // top: CONTAINER_PADDING * 2,
+            bottom: PLAYER_BAR_HEIGHT + CONTAINER_PADDING,
+          ),
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 0,
+              ),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: COMPONENT_PADDING,
+                    ),
+                    child: SearchInput(
+                      controller: searchController,
+                      onChanged: onSearchChanged,
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: CONTAINER_PADDING * 2),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: COMPONENT_PADDING,
-                        ),
-                        child: SearchInput(
-                          controller: searchController,
-                          onChanged: onSearchChanged,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: CONTAINER_PADDING,
-                      ),
-                      const TitleBar(title: "Songs"),
-                    ],
+                  const SizedBox(
+                    height: COMPONENT_PADDING,
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          widget.hasPermission == false
-              ? Center(
-                  child: noAccessToLibraryWidget(),
-                )
-              : ListView.builder(
-                  shrinkWrap: true,
-                  padding: EdgeInsets.zero,
-                  physics: const ClampingScrollPhysics(),
-                  itemCount: searchedSongList.length,
-                  itemBuilder: (context, index) {
-                    bool isSelected = currentSong != null
-                        ? currentSong.id.toString() ==
-                            searchedSongList[index].id.toString()
-                        : false;
+            widget.hasPermission == false
+                ? Center(
+                    child: noAccessToLibraryWidget(),
+                  )
+                : ListView.builder(
+                    shrinkWrap: true,
+                    padding: EdgeInsets.zero,
+                    physics: const ClampingScrollPhysics(),
+                    itemCount: searchedSongList.length,
+                    itemBuilder: (context, index) {
+                      bool isSelected = currentSong != null
+                          ? currentSong.id.toString() ==
+                              searchedSongList[index].id.toString()
+                          : false;
 
-                    bool isFavorite = currentSong != null
-                        ? favoriteIds.contains(currentSong.id.toString())
-                        : false;
+                      bool isFavorite = favoriteIds
+                          .contains(searchedSongList[index].id.toString());
 
-                    return ListTile(
-                      minVerticalPadding: 0,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: COMPONENT_PADDING,
-                        vertical: 0,
-                      ),
-                      title: Text(
-                        searchedSongList[index].title,
-                        style: TextStyle(
-                          color: currentSong != null
-                              ? isSelected
-                                  ? PRIMARY_COLOR
-                                  : null
-                              : null,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                      return ListTile(
+                        minVerticalPadding: 0,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: COMPONENT_PADDING,
+                          vertical: 0,
                         ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                      subtitle:
-                          Text(searchedSongList[index].artist ?? "No Artist"),
-                      leading: SizedBox(
-                        width: 44,
-                        height: 44,
-                        child: SongThumbnail(
-                          // controller: _audioQuery,
-                          isCircle: true,
-                          currentSong: searchedSongList[index],
+                        title: Text(
+                          searchedSongList[index].title,
+                          style: TextStyle(
+                            color: currentSong != null
+                                ? isSelected
+                                    ? PRIMARY_COLOR
+                                    : null
+                                : null,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                         ),
-                      ),
-                      onTap: () {
-                        FocusManager.instance.primaryFocus?.unfocus();
-                        playerProvider.play(song: searchedSongList[index]);
-                      },
-                      trailing: IconButton(
-                        icon: const Icon(Icons.more_vert),
-                        onPressed: () {
-                          displayMenu(
-                            song: searchedSongList[index],
-                            isFavorite: isFavorite,
-                            onSetFavorite: onSetFavorite,
-                          );
+                        subtitle:
+                            Text(searchedSongList[index].artist ?? "No Artist"),
+                        leading: SizedBox(
+                          width: 44,
+                          height: 44,
+                          child: SongThumbnail(
+                            // controller: _audioQuery,
+                            isCircle: true,
+                            currentSong: searchedSongList[index],
+                          ),
+                        ),
+                        onTap: () {
+                          FocusManager.instance.primaryFocus?.unfocus();
+                          playerProvider.play(song: searchedSongList[index]);
                         },
-                      ),
-                    );
-                  },
-                ),
-        ],
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // IconButton(
+                            //   iconSize: 18,
+                            //   icon: isFavorite
+                            //       ? const Icon(Icons.favorite)
+                            //       : const Icon(Icons.favorite_border_outlined),
+                            //   onPressed: () {
+                            //     playerProvider.setFavorite(
+                            //       id: searchedSongList[index].id.toString(),
+                            //     );
+                            //   },
+                            //   color: isFavorite ? PRIMARY_COLOR : null,
+                            // ),
+                            IconButton(
+                              icon: const Icon(Icons.more_vert),
+                              onPressed: () {
+                                displayMenu(
+                                  song: searchedSongList[index],
+                                  isFavorite: isFavorite,
+                                  onSetFavorite: onSetFavorite,
+                                );
+                              },
+                            )
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+          ],
+        ),
       ),
     );
   }

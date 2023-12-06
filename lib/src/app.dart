@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
     var baseTheme = ThemeData(brightness: brightness);
 
     return baseTheme.copyWith(
-        textTheme: GoogleFonts.rubikTextTheme(baseTheme.textTheme),
+        textTheme: GoogleFonts.interTextTheme(baseTheme.textTheme),
         scaffoldBackgroundColor:
             brightness == Brightness.dark ? DARK_BG : LIGHT_BG,
         appBarTheme: AppBarTheme(

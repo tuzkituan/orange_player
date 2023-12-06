@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:orange_player/src/components/search_input.dart';
+import 'package:orange_player/src/components/song_list_view.dart';
 import 'package:orange_player/src/components/song_thumbnail.dart';
 import 'package:orange_player/src/models/playlist_model.dart';
 import 'package:orange_player/src/providers/player_provider.dart';
@@ -101,14 +102,6 @@ class _SongsState extends State<Songs> {
     PlayerProvider playerProvider = Provider.of<PlayerProvider>(context);
     List<SongModel> songList = playerProvider.songList;
 
-    MyPlaylistModel likedPlaylist = playerProvider.likedPlaylist;
-    List<String> favoriteIds = likedPlaylist.songIds;
-
-    void Function({required String id}) onSetFavorite =
-        playerProvider.setFavorite;
-
-    final currentSong = playerProvider.currentSong;
-
     List<SongModel> searchedSongList = songList;
     if (searchKey != null) {
       searchedSongList = songList
@@ -157,75 +150,9 @@ class _SongsState extends State<Songs> {
               ? Center(
                   child: noAccessToLibraryWidget(),
                 )
-              : ListView.builder(
-                  shrinkWrap: true,
-                  padding: EdgeInsets.zero,
-                  physics: const ClampingScrollPhysics(),
-                  itemCount: searchedSongList.length,
-                  itemBuilder: (context, index) {
-                    bool isSelected = currentSong != null
-                        ? currentSong.id.toString() ==
-                            searchedSongList[index].id.toString()
-                        : false;
-
-                    bool isFavorite = favoriteIds
-                        .contains(searchedSongList[index].id.toString());
-
-                    return ListTile(
-                      minVerticalPadding: 16,
-                      dense: true,
-                      contentPadding: const EdgeInsets.only(
-                        left: COMPONENT_PADDING,
-                        right: COMPONENT_PADDING / 2,
-                        top: 0,
-                        bottom: 0,
-                      ),
-                      title: Text(
-                        searchedSongList[index].title,
-                        style: TextStyle(
-                          color: currentSong != null
-                              ? isSelected
-                                  ? PRIMARY_COLOR
-                                  : null
-                              : null,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                      // subtitle:
-                      //     Text(searchedSongList[index].artist ?? "No Artist"),
-                      leading: SizedBox(
-                        width: 40,
-                        height: 40,
-                        child: SongThumbnail(
-                          // controller: _audioQuery,
-                          // isCircle: true,
-                          currentSong: searchedSongList[index],
-                        ),
-                      ),
-                      onTap: () {
-                        FocusManager.instance.primaryFocus?.unfocus();
-                        playerProvider.play(song: searchedSongList[index]);
-                      },
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.more_vert),
-                            onPressed: () {
-                              displayMenu(
-                                song: searchedSongList[index],
-                                isFavorite: isFavorite,
-                                onSetFavorite: onSetFavorite,
-                              );
-                            },
-                          )
-                        ],
-                      ),
-                    );
-                  },
+              : SongListView(
+                  songs: searchedSongList,
+                  onOpenMenu: displayMenu,
                 ),
         ],
       ),

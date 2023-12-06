@@ -1,6 +1,7 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:orange_player/src/components/marquee_widget.dart';
 import 'package:orange_player/src/components/song_thumbnail.dart';
 import 'package:orange_player/src/models/playlist_model.dart';
 import 'package:orange_player/src/providers/player_provider.dart';
@@ -107,16 +108,20 @@ class PlayerView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text(
-                          currentSong.title,
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
-                                    color: PRIMARY_COLOR,
-                                  ),
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
+                        MarqueeWidget(
+                          child: Text(
+                            currentSong.title,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                  color: PRIMARY_COLOR,
+                                ),
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                         const SizedBox(
                           height: 4,
@@ -138,7 +143,7 @@ class PlayerView extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(
-                    width: 48,
+                    width: 24,
                   ),
                   IconButton(
                     icon: isFavorite

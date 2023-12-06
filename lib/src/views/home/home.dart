@@ -122,58 +122,43 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-      bottomNavigationBar: ClipRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
-          child: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.black12, Colors.white10],
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-                stops: [0, 0.8],
-              ),
+      bottomNavigationBar: Theme(
+        data: Theme.of(context).copyWith(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+        ),
+        child: BottomNavigationBar(
+          currentIndex: index,
+          selectedItemColor: PRIMARY_COLOR,
+          // backgroundColor: Colors.grey[900],
+          elevation: 0,
+          type: BottomNavigationBarType.fixed,
+          unselectedItemColor: ACCENT_3,
+          enableFeedback: false,
+          selectedFontSize: 13,
+          unselectedFontSize: 13,
+          showSelectedLabels: true,
+          showUnselectedLabels: true,
+          iconSize: 24,
+          onTap: (value) {
+            setState(() {
+              index = value;
+            });
+          },
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.music_note_outlined),
+              label: 'Songs',
             ),
-            child: Theme(
-              data: Theme.of(context).copyWith(
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-              ),
-              child: BottomNavigationBar(
-                currentIndex: index,
-                selectedItemColor: PRIMARY_COLOR,
-                backgroundColor: const Color(0x00FFFFFF),
-                elevation: 0,
-                type: BottomNavigationBarType.fixed,
-                unselectedItemColor: ACCENT_3,
-                enableFeedback: false,
-                selectedFontSize: 13,
-                unselectedFontSize: 13,
-                showSelectedLabels: true,
-                showUnselectedLabels: true,
-                iconSize: 24,
-                onTap: (value) {
-                  setState(() {
-                    index = value;
-                  });
-                },
-                items: const <BottomNavigationBarItem>[
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.music_note_outlined),
-                    label: 'Songs',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.playlist_add_check),
-                    label: 'Playlists',
-                  ),
-                  // BottomNavigationBarItem(
-                  //   icon: Icon(Icons.settings),
-                  //   label: '',
-                  // ),
-                ],
-              ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.playlist_add_check),
+              label: 'Playlists',
             ),
-          ),
+            // BottomNavigationBarItem(
+            //   icon: Icon(Icons.settings),
+            //   label: '',
+            // ),
+          ],
         ),
       ),
     );

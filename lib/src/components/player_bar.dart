@@ -96,17 +96,17 @@ class PlayerBar extends StatelessWidget {
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              const SizedBox(
-                                height: 2,
-                              ),
-                              Text(
-                                currentSong.artist ?? "Unknown",
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.white,
-                                ),
-                              ),
+                              // const SizedBox(
+                              //   height: 2,
+                              // ),
+                              // Text(
+                              //   currentSong.artist ?? "Unknown",
+                              //   style: const TextStyle(
+                              //     fontSize: 12,
+                              //     fontWeight: FontWeight.w400,
+                              //     color: Colors.white,
+                              //   ),
+                              // ),
                             ],
                           ),
                         ),

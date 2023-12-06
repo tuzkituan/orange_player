@@ -188,14 +188,14 @@ class _SongsState extends State<Songs> {
                                     ? PRIMARY_COLOR
                                     : null
                                 : null,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 15,
                           ),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                         ),
-                        subtitle:
-                            Text(searchedSongList[index].artist ?? "No Artist"),
+                        // subtitle:
+                        //     Text(searchedSongList[index].artist ?? "No Artist"),
                         leading: SizedBox(
                           width: 44,
                           height: 44,

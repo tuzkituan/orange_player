@@ -61,9 +61,9 @@ class PlayerProvider with ChangeNotifier {
       final currentIndex = sequenceState!.currentIndex;
       currentSong = sequenceState.sequence[currentIndex].tag;
       notifyListeners();
+      audioPlayer.play();
     });
     notifyListeners();
-    await audioPlayer.play();
   }
 
   void toggleShuffle() {

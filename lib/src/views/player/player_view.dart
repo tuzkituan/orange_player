@@ -196,10 +196,10 @@ class PlayerView extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(
-                horizontal: 24,
+                horizontal: 12,
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   renderMediaButton(
                     icon: Icons.shuffle,

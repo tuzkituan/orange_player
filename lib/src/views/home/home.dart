@@ -99,15 +99,22 @@ class _HomeState extends State<Home> {
       body: Stack(
         children: [
           if (index == 0)
-            Songs(
-              hasPermission: _hasPermission,
-              checkAndRequestPermissions: checkAndRequestPermissions,
-              pullRefresh: _pullRefresh,
+            SafeArea(
+              child: Songs(
+                hasPermission: _hasPermission,
+                checkAndRequestPermissions: checkAndRequestPermissions,
+                pullRefresh: _pullRefresh,
+              ),
             ),
-          if (index == 1) const Playlists(),
+          if (index == 1)
+            const SafeArea(
+              child: Playlists(),
+            ),
           if (index == 2)
-            Settings(
-              controller: widget.settingsController,
+            SafeArea(
+              child: Settings(
+                controller: widget.settingsController,
+              ),
             ),
           const Positioned(
             left: COMPONENT_PADDING / 2,
@@ -146,6 +153,9 @@ class _HomeState extends State<Home> {
                 enableFeedback: false,
                 selectedFontSize: 13,
                 unselectedFontSize: 13,
+                showSelectedLabels: false,
+                showUnselectedLabels: false,
+                iconSize: 28,
                 onTap: (value) {
                   setState(() {
                     index = value;

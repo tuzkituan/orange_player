@@ -86,11 +86,13 @@ class SongListView extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.more_vert),
                 onPressed: () {
-                  onOpenMenu!(
-                    song: songs![index],
-                    isFavorite: isFavorite,
-                    onSetFavorite: onSetFavorite,
-                  );
+                  if (onOpenMenu != null) {
+                    onOpenMenu!(
+                      song: songs![index],
+                      isFavorite: isFavorite,
+                      onSetFavorite: onSetFavorite,
+                    );
+                  }
                 },
               )
             ],

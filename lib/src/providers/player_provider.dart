@@ -26,6 +26,10 @@ class PlayerProvider with ChangeNotifier {
   //   });
   // }
 
+  List<SongModel> songListByIds({required List<String> ids}) {
+    return songList.where((song) => ids.contains(song.id.toString())).toList();
+  }
+
   void setSongList({List<SongModel> songs = const []}) async {
     if (songList.isEmpty) {
       songList = songs;

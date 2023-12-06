@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 import 'package:orange_player/src/components/song_list_view.dart';
 import 'package:orange_player/src/models/playlist_model.dart';
 import 'package:orange_player/src/providers/player_provider.dart';
+import 'package:provider/provider.dart';
 
 class PlaylistDetails extends StatefulWidget {
   const PlaylistDetails({super.key});
@@ -17,18 +19,18 @@ class _PlaylistDetailsState extends State<PlaylistDetails> {
   Widget build(BuildContext context) {
     Map<String, dynamic> arguments =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-    MyPlaylistModel playlist = arguments['playlist'];
+    MyPlaylistModel playlist = arguments['playlist'] as MyPlaylistModel;
 
-    //  PlayerProvider playerProvider = Provider.of<PlayerProvider>(context);
-
-    //   MyPlaylistModel likedPlaylist = playerProvider.likedPlaylist;
+    List<SongModel> songs = Provider.of<PlayerProvider>(context).songListByIds(
+      ids: playlist.songIds,
+    );
 
     return Scaffold(
       appBar: AppBar(
         title: Text(playlist.name),
       ),
       body: SongListView(
-        songs: [],
+        songs: songs,
       ),
     );
   }

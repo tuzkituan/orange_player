@@ -39,7 +39,7 @@ class PlayerBar extends StatelessWidget {
         decoration: BoxDecoration(
           color: PRIMARY_COLOR.withAlpha(255),
           borderRadius: const BorderRadius.all(
-            Radius.circular(12.0),
+            Radius.circular(0),
           ),
           // gradient: LinearGradient(
           //   colors: [PRIMARY_COLOR.withOpacity(0.3), Colors.transparent],
@@ -164,11 +164,11 @@ class PlayerBar extends StatelessWidget {
                           buffered: bufferedDuration,
                           timeLabelPadding: 0,
                           timeLabelLocation: TimeLabelLocation.none,
-                          progressBarColor: ACCENT_1,
+                          progressBarColor: Colors.white,
                           baseBarColor:
-                              isDarkMode ? Colors.grey[900] : Colors.grey[400],
+                              isDarkMode ? PRIMARY_COLOR : Colors.grey[400],
                           bufferedBarColor:
-                              isDarkMode ? Colors.grey[900] : Colors.grey[400],
+                              isDarkMode ? PRIMARY_COLOR : Colors.grey[400],
                           barHeight: 2,
                           thumbRadius: 0,
                           onSeek: (duration) async {

@@ -1,15 +1,11 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:orange_player/src/components/player_bar.dart';
-import 'package:orange_player/src/components/title_bar.dart';
 import 'package:orange_player/src/providers/player_provider.dart';
 import 'package:orange_player/src/theme/colors.dart';
 import 'package:orange_player/src/theme/variables.dart';
-import 'package:orange_player/src/views/home/playlists/playlists.dart';
+import 'package:orange_player/src/views/home/playlists/playlists_layout.dart';
 import 'package:orange_player/src/views/home/settings/settings_controller.dart';
-import 'package:orange_player/src/views/home/settings/settings.dart';
 import 'package:orange_player/src/views/home/songs/songs.dart';
 import 'package:provider/provider.dart';
 
@@ -64,58 +60,24 @@ class _HomeState extends State<Home> {
     getData();
   }
 
-  Widget renderTitle() {
-    String title = '';
-    switch (index) {
-      case 1:
-        title = 'Playlist';
-        break;
-      case 2:
-        title = 'Settings';
-        break;
-      case 0:
-      default:
-        title = 'Songs';
-        break;
-    }
-
-    return TitleBar(title: title);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       extendBody: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        title: renderTitle(),
-        surfaceTintColor: Colors.black,
-        // scrolledUnderElevation: 0,
-      ),
       body: Stack(
         children: [
           if (index == 0)
-            SafeArea(
-              child: Songs(
-                hasPermission: _hasPermission,
-                checkAndRequestPermissions: checkAndRequestPermissions,
-                pullRefresh: _pullRefresh,
-              ),
+            Songs(
+              hasPermission: _hasPermission,
+              checkAndRequestPermissions: checkAndRequestPermissions,
+              pullRefresh: _pullRefresh,
             ),
-          if (index == 1)
-            const SafeArea(
-              child: Playlists(),
-            ),
-          if (index == 2)
-            SafeArea(
-              child: Settings(
-                controller: widget.settingsController,
-              ),
-            ),
+          if (index == 1) const PlaylistsLayout(),
           const Positioned(
-            left: COMPONENT_PADDING / 4,
-            right: COMPONENT_PADDING / 4,
-            bottom: COMPONENT_PADDING / 2,
+            left: 0,
+            right: 0,
+            bottom: 0,
             child: SafeArea(
               child: PlayerBar(),
             ),
@@ -130,7 +92,7 @@ class _HomeState extends State<Home> {
         child: BottomNavigationBar(
           currentIndex: index,
           selectedItemColor: PRIMARY_COLOR,
-          // backgroundColor: Colors.grey[900],
+          backgroundColor: Color.fromARGB(255, 22, 22, 22),
           elevation: 0,
           type: BottomNavigationBarType.fixed,
           unselectedItemColor: ACCENT_3,

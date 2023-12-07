@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:orange_player/src/components/gradient_layout.dart';
 import 'package:orange_player/src/components/search_input.dart';
 import 'package:orange_player/src/components/song_list_view.dart';
-import 'package:orange_player/src/components/song_thumbnail.dart';
-import 'package:orange_player/src/models/playlist_model.dart';
+import 'package:orange_player/src/components/title_bar.dart';
 import 'package:orange_player/src/providers/player_provider.dart';
 import 'package:orange_player/src/theme/colors.dart';
 import 'package:orange_player/src/theme/variables.dart';
@@ -110,52 +110,34 @@ class _SongsState extends State<Songs> {
           .toList();
     }
 
-    return Container(
-      decoration: const BoxDecoration(
-          // gradient: LinearGradient(
-          //   colors: [PRIMARY_COLOR, Colors.transparent],
-          //   begin: Alignment.topCenter,
-          //   end: Alignment.bottomCenter,
-          //   stops: [0.0, 0.25],
-          // ),
+    return GradientLayout(
+      headerChildren: const [
+        TitleBar(title: "Songs"),
+      ],
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: COMPONENT_PADDING),
+          child: Column(
+            children: [
+              SearchInput(
+                controller: searchController,
+                onChanged: onSearchChanged,
+              ),
+            ],
           ),
-      child: ListView(
-        padding: EdgeInsets.only(
-          // top: CONTAINER_PADDING * 2,
-          bottom: PLAYER_BAR_HEIGHT + CONTAINER_PADDING,
         ),
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(
-              top: 0,
-            ),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: COMPONENT_PADDING,
-                  ),
-                  child: SearchInput(
-                    controller: searchController,
-                    onChanged: onSearchChanged,
-                  ),
-                ),
-                const SizedBox(
-                  height: COMPONENT_PADDING,
-                ),
-              ],
-            ),
-          ),
-          widget.hasPermission == false
-              ? Center(
-                  child: noAccessToLibraryWidget(),
-                )
-              : SongListView(
-                  songs: searchedSongList,
-                  onOpenMenu: displayMenu,
-                ),
-        ],
-      ),
+        const SizedBox(
+          height: COMPONENT_PADDING,
+        ),
+        widget.hasPermission == false
+            ? Center(
+                child: noAccessToLibraryWidget(),
+              )
+            : SongListView(
+                songs: searchedSongList,
+                onOpenMenu: displayMenu,
+              ),
+      ],
     );
   }
 

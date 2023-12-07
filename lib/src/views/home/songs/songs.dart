@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import 'package:orange_player/src/components/gradient_layout.dart';
+import 'package:orange_player/src/components/my_button.dart';
+import 'package:orange_player/src/layouts/gradient_layout.dart';
 import 'package:orange_player/src/components/search_input.dart';
 import 'package:orange_player/src/components/song_list_view.dart';
 import 'package:orange_player/src/components/title_bar.dart';
@@ -62,19 +63,24 @@ class _SongsState extends State<Songs> {
       builder: (_) {
         return DraggableScrollableSheet(
           expand: false,
-          initialChildSize: .28,
-          minChildSize: .28,
-          maxChildSize: .28,
+          initialChildSize: .25,
+          minChildSize: .25,
+          maxChildSize: .25,
           builder: (BuildContext context, ScrollController scrollController) {
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 ListTile(
+                  dense: true,
                   leading: Icon(isFavorite == true
                       ? Icons.favorite
                       : Icons.favorite_border_outlined),
                   title: Text(
                     isFavorite ? "Unlike" : "Like",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
                   ),
                   onTap: () {
                     onSetFavorite(id: song!.id.toString());
@@ -82,9 +88,16 @@ class _SongsState extends State<Songs> {
                   },
                 ),
                 ListTile(
+                  dense: true,
                   minVerticalPadding: 0,
                   leading: const Icon(Icons.add),
-                  title: const Text('Add to playlist'),
+                  title: const Text(
+                    'Add to playlist',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                  ),
                   onTap: () {
                     Navigator.pop(context);
                   },
@@ -118,11 +131,31 @@ class _SongsState extends State<Songs> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: COMPONENT_PADDING),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SearchInput(
                 controller: searchController,
                 onChanged: onSearchChanged,
               ),
+              // const SizedBox(
+              //   height: COMPONENT_PADDING / 2,
+              // ),
+              // const Row(
+              //   children: [
+              //     MyButton(
+              //       text: "Play All",
+              //       icon: Icons.play_arrow,
+              //     ),
+              //     SizedBox(
+              //       width: 8,
+              //     ),
+              //     MyButton(
+              //       text: "Shuffle",
+              //       icon: Icons.shuffle,
+              //     ),
+              //   ],
+              // )
             ],
           ),
         ),

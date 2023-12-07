@@ -25,12 +25,12 @@ class GradientLayout extends StatelessWidget {
             padding: const EdgeInsets.only(
               left: COMPONENT_PADDING,
               right: COMPONENT_PADDING,
-              top: CONTAINER_PADDING * 4,
+              top: CONTAINER_PADDING * 3.5,
             ),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  (color ?? PRIMARY_COLOR).withOpacity(0.6),
+                  (color ?? PRIMARY_COLOR).withOpacity(0.3),
                   Colors.transparent
                 ],
                 begin: Alignment.topCenter,

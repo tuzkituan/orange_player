@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:orange_player/src/models/playlist_model.dart';
 
-class PlayerProvider with ChangeNotifier {
+class PlayerProvider with ChangeNotifier, DiagnosticableTreeMixin {
   final AudioPlayer audioPlayer = AudioPlayer();
   List<SongModel> songList = [];
 

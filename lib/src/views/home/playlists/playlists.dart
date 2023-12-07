@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:orange_player/src/components/gradient_layout.dart';
+import 'package:orange_player/src/layouts/gradient_layout.dart';
 import 'package:orange_player/src/components/title_bar.dart';
 import 'package:orange_player/src/models/playlist_model.dart';
 import 'package:orange_player/src/providers/player_provider.dart';

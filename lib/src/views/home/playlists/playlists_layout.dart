@@ -3,7 +3,7 @@ import 'package:orange_player/src/views/home/playlists/playlist_details.dart';
 import 'package:orange_player/src/views/home/playlists/playlists.dart';
 
 class PlaylistsLayout extends StatefulWidget {
-  const PlaylistsLayout({super.key});
+  const PlaylistsLayout({Key? key}) : super(key: key);
 
   @override
   State<PlaylistsLayout> createState() => _PlaylistsLayoutState();

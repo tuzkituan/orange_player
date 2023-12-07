@@ -1,9 +1,10 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:orange_player/src/components/player_bar.dart';
 import 'package:orange_player/src/providers/player_provider.dart';
 import 'package:orange_player/src/theme/colors.dart';
-import 'package:orange_player/src/theme/variables.dart';
 import 'package:orange_player/src/views/home/playlists/playlists_layout.dart';
 import 'package:orange_player/src/views/home/settings/settings_controller.dart';
 import 'package:orange_player/src/views/home/songs/songs.dart';
@@ -84,43 +85,65 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-      bottomNavigationBar: Theme(
-        data: Theme.of(context).copyWith(
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-        ),
-        child: BottomNavigationBar(
-          currentIndex: index,
-          selectedItemColor: PRIMARY_COLOR,
-          backgroundColor: Color.fromARGB(255, 22, 22, 22),
-          elevation: 0,
-          type: BottomNavigationBarType.fixed,
-          unselectedItemColor: ACCENT_3,
-          enableFeedback: false,
-          selectedFontSize: 13,
-          unselectedFontSize: 13,
-          showSelectedLabels: true,
-          showUnselectedLabels: true,
-          iconSize: 24,
-          onTap: (value) {
-            setState(() {
-              index = value;
-            });
-          },
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.music_note_outlined),
-              label: 'Songs',
+      bottomNavigationBar: ClipRect(
+        //I'm using BackdropFilter for the blurring effect
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
+          child: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.black, Colors.transparent],
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                stops: [0, 1],
+              ),
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.playlist_add_check),
-              label: 'Playlists',
+            child: Theme(
+              data: Theme.of(context).copyWith(
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+              ),
+              child: BottomNavigationBar(
+                currentIndex: index,
+                selectedItemColor: PRIMARY_COLOR,
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                type: BottomNavigationBarType.fixed,
+                unselectedItemColor: ACCENT_3,
+                enableFeedback: false,
+                selectedFontSize: 11,
+                unselectedFontSize: 11,
+                showSelectedLabels: true,
+                showUnselectedLabels: true,
+                iconSize: 30,
+                onTap: (value) {
+                  setState(() {
+                    index = value;
+                  });
+                },
+                items: const <BottomNavigationBarItem>[
+                  BottomNavigationBarItem(
+                    icon: Padding(
+                      padding: EdgeInsets.all(4),
+                      child: Icon(Icons.music_note_outlined),
+                    ),
+                    label: 'Songs',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Padding(
+                      padding: EdgeInsets.all(4),
+                      child: Icon(Icons.playlist_add_check),
+                    ),
+                    label: 'Playlists',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.album_outlined),
+                    label: 'Albums',
+                  ),
+                ],
+              ),
             ),
-            // BottomNavigationBarItem(
-            //   icon: Icon(Icons.settings),
-            //   label: '',
-            // ),
-          ],
+          ),
         ),
       ),
     );

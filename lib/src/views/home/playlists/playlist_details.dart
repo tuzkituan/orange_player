@@ -20,7 +20,8 @@ class _PlaylistDetailsState extends State<PlaylistDetails> {
   Widget build(BuildContext context) {
     Map<String, dynamic> arguments =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-    MyPlaylistModel playlist = arguments['playlist'] as MyPlaylistModel;
+    MyPlaylistModel playlist =
+        MyPlaylistModel.fromJson(arguments['playlist'] as Map<String, dynamic>);
 
     List<SongModel> songs = Provider.of<PlayerProvider>(context).songListByIds(
       ids: playlist.songIds,

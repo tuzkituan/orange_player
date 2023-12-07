@@ -11,7 +11,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await JustAudioBackground.init(
     androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
-    androidNotificationChannelName: 'Audio playback',
+    androidNotificationChannelName: 'Orange Media Player',
     androidNotificationOngoing: true,
   );
 
@@ -24,8 +24,10 @@ void main() async {
     systemNavigationBarDividerColor: Colors.transparent,
   ));
 
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
-      overlays: [SystemUiOverlay.top]);
+  SystemChrome.setEnabledSystemUIMode(
+    SystemUiMode.edgeToEdge,
+    overlays: [SystemUiOverlay.top],
+  );
 
   // Set up the SettingsController, which will glue user settings to multiple
   // Flutter Widgets.

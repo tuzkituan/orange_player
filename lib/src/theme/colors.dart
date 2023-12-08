@@ -1,7 +1,9 @@
+// ignore_for_file: constant_identifier_names, non_constant_identifier_names
+
 import 'package:flutter/material.dart';
 
 // MAIN
-Color DARK_BG = Color.fromARGB(255, 26, 27, 32);
+Color DARK_BG = Color.fromARGB(255, 14, 14, 15);
 Color LIGHT_BG = Colors.white;
 
 // COMPONENT

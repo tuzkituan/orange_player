@@ -11,14 +11,13 @@ class PlaylistItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.restorablePushNamed(context, PlaylistDetails.routeName,
-            arguments: {
-              'playlist': {
-                'id': playlist.id,
-                'name': playlist.name,
-                'songIds': playlist.songIds,
-              },
-            });
+        Navigator.pushNamed(
+          context,
+          PlaylistDetails.routeName,
+          arguments: {
+            "id": playlist.id,
+          },
+        );
       },
       child: Container(
         clipBehavior: Clip.hardEdge,

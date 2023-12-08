@@ -2,11 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import 'package:orange_player/src/components/my_button.dart';
-import 'package:orange_player/src/layouts/gradient_layout.dart';
 import 'package:orange_player/src/components/search_input.dart';
 import 'package:orange_player/src/components/song_list_view.dart';
-import 'package:orange_player/src/components/title_bar.dart';
+import 'package:orange_player/src/layouts/gradient_layout.dart';
 import 'package:orange_player/src/providers/player_provider.dart';
 import 'package:orange_player/src/theme/colors.dart';
 import 'package:orange_player/src/theme/variables.dart';
@@ -51,7 +49,7 @@ class _SongsState extends State<Songs> {
   void displayMenu({
     required SongModel? song,
     required bool isFavorite,
-    required void Function({required String id}) onSetFavorite,
+    required void Function({required String songId}) onSetFavorite,
   }) {
     showModalBottomSheet(
       context: context,
@@ -83,7 +81,7 @@ class _SongsState extends State<Songs> {
                     ),
                   ),
                   onTap: () {
-                    onSetFavorite(id: song!.id.toString());
+                    onSetFavorite(songId: song!.id.toString());
                     Navigator.pop(context);
                   },
                 ),
@@ -124,9 +122,8 @@ class _SongsState extends State<Songs> {
     }
 
     return GradientLayout(
-      headerChildren: const [
-        TitleBar(title: "Songs"),
-      ],
+      title: "Songs",
+      headerChildren: const [],
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: COMPONENT_PADDING),

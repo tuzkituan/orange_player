@@ -5,6 +5,7 @@ import 'package:orange_player/src/components/marquee_widget.dart';
 import 'package:orange_player/src/components/song_thumbnail.dart';
 import 'package:orange_player/src/models/playlist_model.dart';
 import 'package:orange_player/src/providers/player_provider.dart';
+import 'package:orange_player/src/providers/playlist_provider.dart';
 import 'package:orange_player/src/theme/colors.dart';
 import 'package:orange_player/src/theme/variables.dart';
 import 'package:provider/provider.dart';
@@ -42,18 +43,23 @@ class PlayerView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     PlayerProvider playerProvider = Provider.of<PlayerProvider>(context);
+    PlaylistProvider playlistProvider = Provider.of<PlaylistProvider>(context);
+
+    // CURRENT SONG, PLAYLIST
     final currentSong = playerProvider.currentSong;
 
-    MyPlaylistModel likedPlaylist = playerProvider.likedPlaylist;
+    MyPlaylistModel likedPlaylist = playlistProvider.getLikedPlaylist();
     List<String> favoriteIds = likedPlaylist.songIds;
 
+    MyPlaylistModel? currentPlaylist =
+        playlistProvider.getAPlaylist(id: playerProvider.currentPlaylistId);
+
+    // BOOLEAN
     bool isFavorite = currentSong != null
         ? favoriteIds.contains(currentSong.id.toString())
         : false;
     bool isPlaying = playerProvider.audioPlayer.playing;
-
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     LoopMode loopMode =
         playerProvider.audioPlayer.sequenceState?.loopMode ?? LoopMode.off;
     bool isShuffle =
@@ -67,7 +73,8 @@ class PlayerView extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         title: Text(
-          'Playing from Library'.toUpperCase(),
+          'Playing from ${currentPlaylist != null ? currentPlaylist.name : "Library"}'
+              .toUpperCase(),
           style: const TextStyle(
             fontWeight: FontWeight.w500,
             fontSize: 14,
@@ -150,8 +157,8 @@ class PlayerView extends StatelessWidget {
                         ? const Icon(Icons.favorite)
                         : const Icon(Icons.favorite_border_outlined),
                     onPressed: () {
-                      playerProvider.setFavorite(
-                        id: currentSong.id.toString(),
+                      playlistProvider.setFavorite(
+                        songId: currentSong.id.toString(),
                       );
                     },
                     color: isFavorite ? PRIMARY_COLOR : DARK_BUTTON_COLOR,

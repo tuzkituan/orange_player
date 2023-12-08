@@ -4,6 +4,7 @@ import 'package:orange_player/src/components/marquee_widget.dart';
 import 'package:orange_player/src/components/song_thumbnail.dart';
 import 'package:orange_player/src/models/playlist_model.dart';
 import 'package:orange_player/src/providers/player_provider.dart';
+import 'package:orange_player/src/providers/playlist_provider.dart';
 import 'package:orange_player/src/theme/colors.dart';
 import 'package:orange_player/src/theme/variables.dart';
 import 'package:orange_player/src/views/player/player_view.dart';
@@ -15,9 +16,10 @@ class PlayerBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     PlayerProvider playerProvider = Provider.of<PlayerProvider>(context);
+    PlaylistProvider playlistProvider = Provider.of<PlaylistProvider>(context);
     final currentSong = playerProvider.currentSong;
 
-    MyPlaylistModel likedPlaylist = playerProvider.likedPlaylist;
+    MyPlaylistModel likedPlaylist = playlistProvider.getLikedPlaylist();
     List<String> favoriteIds = likedPlaylist.songIds;
 
     bool isPlaying = playerProvider.audioPlayer.playing;
@@ -117,8 +119,8 @@ class PlayerBar extends StatelessWidget {
                             ? Icons.favorite
                             : Icons.favorite_border_outlined,
                         onPressed: () {
-                          playerProvider.setFavorite(
-                            id: currentSong.id.toString(),
+                          playlistProvider.setFavorite(
+                            songId: currentSong.id.toString(),
                           );
                         },
                         color: isFavorite ? Colors.white : DARK_BUTTON_COLOR,

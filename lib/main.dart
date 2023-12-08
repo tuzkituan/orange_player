@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:orange_player/src/providers/player_provider.dart';
+import 'package:orange_player/src/providers/playlist_provider.dart';
 import 'package:provider/provider.dart';
 import 'src/app.dart';
 import 'src/views/home/settings/settings_controller.dart';
@@ -44,6 +45,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => PlayerProvider()),
+        ChangeNotifierProvider(create: (_) => PlaylistProvider()),
       ],
       child: MyApp(settingsController: settingsController),
     ),

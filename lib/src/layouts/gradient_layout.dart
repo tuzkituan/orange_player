@@ -58,7 +58,7 @@ class GradientLayout extends StatelessWidget {
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                stops: const [0.0, 0.9],
+                stops: const [0.0, 1],
               ),
             ),
             child: Column(

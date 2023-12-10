@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:orange_player/src/theme/colors.dart';
 
 class TitleBar extends StatelessWidget {
@@ -20,11 +21,14 @@ class TitleBar extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          title,
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 28,
-            color: color ?? PRIMARY_COLOR,
+          title.toUpperCase(),
+          style: GoogleFonts.manrope(
+            textStyle: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 20,
+              color: color ?? ACCENT_2,
+              letterSpacing: 1.5,
+            ),
           ),
         ),
         if (actions != null) ...[

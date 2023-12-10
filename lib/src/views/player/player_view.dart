@@ -54,6 +54,9 @@ class PlayerView extends StatelessWidget {
     MyPlaylistModel? currentPlaylist =
         playlistProvider.getAPlaylist(id: playerProvider.currentPlaylistId);
 
+    bool canNext = playerProvider.audioPlayer.hasNext;
+    bool canPrev = playerProvider.audioPlayer.hasPrevious;
+
     // BOOLEAN
     bool isFavorite = currentSong != null
         ? favoriteIds.contains(currentSong.id.toString())
@@ -72,13 +75,32 @@ class PlayerView extends StatelessWidget {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: Text(
-          'Playing from ${currentPlaylist != null ? currentPlaylist.name : "Library"}'
-              .toUpperCase(),
-          style: const TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 14,
-          ),
+        title: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Playing from Your Library'.toUpperCase(),
+              style: const TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 12,
+                letterSpacing: 1.3,
+              ),
+            ),
+            if (currentPlaylist != null) ...[
+              const SizedBox(
+                height: 2,
+              ),
+              Text(
+                currentPlaylist.name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ]
+          ],
         ),
         centerTitle: true,
       ),
@@ -232,11 +254,14 @@ class PlayerView extends StatelessWidget {
                   renderMediaButton(
                     icon: Icons.skip_previous,
                     onPressed: () {
-                      playerProvider.previous();
+                      if (canPrev) {
+                        playerProvider.previous();
+                      }
                     },
                     color: getActiveColor(
                       isDarkMode: isDarkMode,
                       value: false,
+                      isDisabled: !canPrev,
                     ),
                   ),
                   const SizedBox(
@@ -258,11 +283,14 @@ class PlayerView extends StatelessWidget {
                   renderMediaButton(
                     icon: Icons.skip_next,
                     onPressed: () {
-                      playerProvider.next();
+                      if (canNext) {
+                        playerProvider.next();
+                      }
                     },
                     color: getActiveColor(
                       isDarkMode: isDarkMode,
                       value: false,
+                      isDisabled: !canNext,
                     ),
                   ),
                   const SizedBox(

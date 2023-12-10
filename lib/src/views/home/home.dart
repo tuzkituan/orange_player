@@ -115,9 +115,9 @@ class _HomeState extends State<Home> {
                   enableFeedback: false,
                   selectedFontSize: 11,
                   unselectedFontSize: 11,
-                  showSelectedLabels: true,
-                  showUnselectedLabels: true,
-                  iconSize: 30,
+                  showSelectedLabels: false,
+                  showUnselectedLabels: false,
+                  iconSize: 24,
                   onTap: (value) {
                     setState(() {
                       index = value;
@@ -126,25 +126,25 @@ class _HomeState extends State<Home> {
                   items: const <BottomNavigationBarItem>[
                     BottomNavigationBarItem(
                       icon: Padding(
-                        padding: EdgeInsets.all(4),
+                        padding: EdgeInsets.all(0),
                         child: Icon(Icons.music_note_outlined),
                       ),
                       label: 'Songs',
                     ),
                     BottomNavigationBarItem(
                       icon: Padding(
-                        padding: EdgeInsets.all(4),
+                        padding: EdgeInsets.all(0),
                         child: Icon(Icons.playlist_add_check),
                       ),
                       label: 'Playlists',
                     ),
-                    BottomNavigationBarItem(
-                      icon: Padding(
-                        padding: EdgeInsets.all(4),
-                        child: Icon(Icons.album_outlined),
-                      ),
-                      label: 'Albums',
-                    ),
+                    // BottomNavigationBarItem(
+                    //   icon: Padding(
+                    //     padding: EdgeInsets.all(4),
+                    //     child: Icon(Icons.album_outlined),
+                    //   ),
+                    //   label: 'Albums',
+                    // ),
                   ],
                 ),
               ),

@@ -3,6 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:orange_player/src/theme/colors.dart';
+import 'package:orange_player/src/views/add_to_playlist/add_to_playlist.dart';
 import 'package:orange_player/src/views/home/home.dart';
 import 'package:orange_player/src/views/home/playlists/add_playlist.dart';
 import 'package:orange_player/src/views/home/playlists/playlist_details.dart';
@@ -88,6 +89,8 @@ class MyApp extends StatelessWidget {
                     return const PlaylistDetails();
                   case AddPlaylist.routeName:
                     return const AddPlaylist();
+                  case AddToPlaylist.routeName:
+                    return const AddToPlaylist();
                   case Home.routeName:
                   default:
                     return Home(settingsController: settingsController);

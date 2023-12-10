@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:orange_player/src/components/title_bar.dart';
 import 'package:orange_player/src/layouts/gradient_layout.dart';
 import 'package:orange_player/src/models/playlist_model.dart';
 import 'package:orange_player/src/providers/playlist_provider.dart';
@@ -44,7 +43,9 @@ class _PlaylistsState extends State<Playlists> {
           crossAxisSpacing: COMPONENT_PADDING,
           mainAxisSpacing: COMPONENT_PADDING,
           padding: const EdgeInsets.symmetric(
-              horizontal: COMPONENT_PADDING, vertical: 0),
+            horizontal: COMPONENT_PADDING,
+            vertical: 0,
+          ),
           shrinkWrap: true,
           children: playlists
               .map(

@@ -73,6 +73,18 @@ class PlaylistProvider with ChangeNotifier {
     return playlistList.firstWhere((playlist) => playlist.id == "liked");
   }
 
+  void addSongToPlaylist({required String playlistId, required String songId}) {
+    MyPlaylistModel find = playlistList.firstWhere(
+      (playlist) => playlist.id == playlistId,
+    );
+    if (find.songIds.contains(songId)) {
+      return;
+    }
+    find.songIds.add(songId);
+    saveToDisk();
+    notifyListeners();
+  }
+
   void saveToDisk() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final String encodedData = MyPlaylistModel.encode(playlistList);

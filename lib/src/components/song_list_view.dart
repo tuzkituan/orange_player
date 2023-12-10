@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:orange_player/src/components/song_thumbnail.dart';
 import 'package:orange_player/src/models/playlist_model.dart';
 import 'package:orange_player/src/providers/player_provider.dart';
 import 'package:orange_player/src/providers/playlist_provider.dart';
 import 'package:orange_player/src/theme/colors.dart';
 import 'package:orange_player/src/theme/variables.dart';
+import 'package:orange_player/src/views/add_to_playlist/add_to_playlist.dart';
 import 'package:provider/provider.dart';
 
 class SongListView extends StatefulWidget {
@@ -25,6 +27,16 @@ class SongListView extends StatefulWidget {
 }
 
 class _SongListViewState extends State<SongListView> {
+  void onAddToPlaylist({required String songId}) async {
+    Navigator.pushReplacementNamed(
+      context,
+      AddToPlaylist.routeName,
+      arguments: {
+        "id": songId,
+      },
+    );
+  }
+
   void displayMenu({
     required SongModel? song,
     required bool isFavorite,
@@ -76,7 +88,9 @@ class _SongListViewState extends State<SongListView> {
                     ),
                   ),
                   onTap: () {
-                    Navigator.pop(context);
+                    onAddToPlaylist(
+                      songId: song!.id.toString(),
+                    );
                   },
                 ),
               ],
@@ -145,15 +159,15 @@ class _SongListViewState extends State<SongListView> {
             ),
             // subtitle:
             //     Text(widget.songs[index].artist ?? "No Artist"),
-            // leading: SizedBox(
-            //   width: 40,
-            //   height: 40,
-            //   child: SongThumbnail(
-            //     // controller: _audioQuery,
-            //     // isCircle: true,
-            //     currentSong: widget.songs![index],
-            //   ),
-            // ),
+            leading: SizedBox(
+              width: 40,
+              height: 40,
+              child: SongThumbnail(
+                // controller: _audioQuery,
+                // isCircle: true,
+                currentSong: widget.songs![index],
+              ),
+            ),
             onTap: () {
               FocusManager.instance.primaryFocus?.unfocus();
               playerProvider.play(

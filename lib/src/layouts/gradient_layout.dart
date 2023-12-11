@@ -11,6 +11,7 @@ class GradientLayout extends StatelessWidget {
       this.children,
       this.headerChildren,
       required this.title,
+      this.icon,
       this.actions,
       this.color});
 
@@ -18,6 +19,7 @@ class GradientLayout extends StatelessWidget {
   final List<Widget>? headerChildren;
   final Color? color;
   final String title;
+  final Icon? icon;
   final List<Widget>? actions;
 
   @override
@@ -27,16 +29,19 @@ class GradientLayout extends StatelessWidget {
       extendBody: true,
       appBar: AppBar(
         scrolledUnderElevation: 0,
-        title: TitleBar(title: title),
-        backgroundColor: Colors.black45,
-        flexibleSpace: ClipRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-            child: Container(
-              color: Colors.transparent,
-            ),
-          ),
-        ),
+        title: TitleBar(title: title, icon: icon),
+        toolbarHeight: 45,
+        // backgroundColor: Colors.black45,
+        backgroundColor: PRIMARY_COLOR,
+        // flexibleSpace: ClipRect(
+        //   child: BackdropFilter(
+        //     filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        //     child: Container(
+        //       color: Colors.transparent,
+        //     ),
+        //   ),
+        // ),
+        elevation: 0,
         actions: actions,
       ),
       body: ListView(
@@ -48,19 +53,19 @@ class GradientLayout extends StatelessWidget {
             padding: const EdgeInsets.only(
               left: COMPONENT_PADDING,
               right: COMPONENT_PADDING,
-              top: CONTAINER_PADDING * 4.5,
+              top: CONTAINER_PADDING * 3.5,
             ),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  (color ?? PRIMARY_COLOR).withOpacity(1),
-                  Colors.transparent
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                stops: const [0.0, 1],
-              ),
-            ),
+            // decoration: BoxDecoration(
+            //   gradient: LinearGradient(
+            //     colors: [
+            //       (color ?? PRIMARY_COLOR).withOpacity(1),
+            //       Colors.transparent
+            //     ],
+            //     begin: Alignment.topCenter,
+            //     end: Alignment.bottomCenter,
+            //     stops: const [0.0, 0.9],
+            //   ),
+            // ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,

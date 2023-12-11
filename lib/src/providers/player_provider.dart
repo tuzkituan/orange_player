@@ -2,18 +2,16 @@ import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:orange_player/src/models/playlist_model.dart';
 import 'package:orange_player/src/providers/playlist_provider.dart';
 
-class PlayerProvider with ChangeNotifier, DiagnosticableTreeMixin {
-  final PlaylistProvider playlistProvider = PlaylistProvider();
-
+class PlayerProvider with ChangeNotifier {
   final AudioPlayer audioPlayer = AudioPlayer();
   List<SongModel> songList = [];
   List<SongModel> playingList = [];
 
   dynamic currentSong;
   String? currentPlaylistId;
-  int? currentSongIndex;
 
   ConcatenatingAudioSource? playlistSequence;
 
@@ -26,7 +24,8 @@ class PlayerProvider with ChangeNotifier, DiagnosticableTreeMixin {
   //   });
   // }
 
-  createNewPlaylistSequence({required List<SongModel> songs}) async {
+  Future<ConcatenatingAudioSource> createNewPlaylistSequence(
+      {required List<SongModel> songs}) async {
     return ConcatenatingAudioSource(
       useLazyPreparation: true,
       shuffleOrder: DefaultShuffleOrder(),
@@ -56,44 +55,51 @@ class PlayerProvider with ChangeNotifier, DiagnosticableTreeMixin {
   Future<void> startSequence({
     String? playlistId,
     SongModel? song,
+    required PlaylistProvider playlistProvider,
   }) async {
-    dynamic playlist;
-    List<SongModel> tempSongList;
+    ConcatenatingAudioSource playlist = ConcatenatingAudioSource(children: []);
+    List<SongModel>? tempSongList;
 
     if (playlistId == null) {
       playlist = await createNewPlaylistSequence(songs: songList);
       tempSongList = songList;
     } else {
-      tempSongList = playlistProvider
-          .getAPlaylist(id: playlistId)!
-          .songIds
-          .map(
-            (e) => songList.firstWhere(
-              (element) => element.id.toString() == e.toString(),
-            ),
-          )
-          .toList();
+      MyPlaylistModel? find = playlistProvider.getAPlaylist(
+        id: playlistId.toString(),
+      );
 
-      playlist = await createNewPlaylistSequence(songs: tempSongList);
+      if (find != null) {
+        tempSongList = find.songIds
+            .map(
+              (e) => songList.firstWhere(
+                (element) => element.id.toString() == e.toString(),
+              ),
+            )
+            .toList();
+        playlist = await createNewPlaylistSequence(songs: tempSongList);
+      }
     }
 
-    int currentIndex = song != null
-        ? tempSongList.indexWhere(
-            (element) => element.id.toString() == song.id.toString())
-        : 0;
-    await audioPlayer.setAudioSource(
-      playlist,
-      initialIndex: currentIndex,
-      initialPosition: Duration.zero,
-    );
-    audioPlayer.sequenceStateStream.listen((sequenceState) {
-      final currentIndex = sequenceState!.currentIndex;
-      currentSong = sequenceState.sequence[currentIndex].tag;
+    if (tempSongList != null) {
+      int currentIndex = song != null
+          ? tempSongList.indexWhere(
+              (element) => element.id.toString() == song.id.toString())
+          : 0;
+
+      await audioPlayer.setAudioSource(
+        playlist,
+        initialIndex: currentIndex,
+        initialPosition: Duration.zero,
+      );
+      audioPlayer.sequenceStateStream.listen((sequenceState) {
+        final currentIndex = sequenceState!.currentIndex;
+        currentSong = sequenceState.sequence[currentIndex].tag;
+        notifyListeners();
+      });
+      playlistSequence = playlist;
+      playingList = tempSongList;
       notifyListeners();
-    });
-    playlistSequence = playlist;
-    playingList = tempSongList;
-    notifyListeners();
+    }
   }
 
   void addToQueue({String? songId}) {
@@ -178,6 +184,7 @@ class PlayerProvider with ChangeNotifier, DiagnosticableTreeMixin {
   void play({
     required SongModel song,
     String? playlistId,
+    required PlaylistProvider playlistProvider,
   }) async {
     try {
       bool check = true;
@@ -189,6 +196,7 @@ class PlayerProvider with ChangeNotifier, DiagnosticableTreeMixin {
           await startSequence(
             playlistId: playlistId,
             song: song,
+            playlistProvider: playlistProvider,
           );
         } else {
           check = false;
@@ -199,14 +207,20 @@ class PlayerProvider with ChangeNotifier, DiagnosticableTreeMixin {
       if (playlistId == null) {
         if (currentPlaylistId == null) {
           currentPlaylistId = "ALL";
-          await startSequence(song: song);
+          await startSequence(
+            song: song,
+            playlistProvider: playlistProvider,
+          );
         }
         if (currentPlaylistId != null) {
           if (currentPlaylistId == "ALL") {
             check = false;
           } else {
             currentPlaylistId = "ALL";
-            await startSequence(song: song);
+            await startSequence(
+              song: song,
+              playlistProvider: playlistProvider,
+            );
           }
         }
       }

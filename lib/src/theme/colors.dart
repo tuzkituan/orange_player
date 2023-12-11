@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 
 // MAIN
-Color DARK_BG = Color.fromARGB(255, 16, 16, 17);
+Color DARK_BG = Color(0xFF121212);
 Color LIGHT_BG = Colors.white;
 
 // COMPONENT

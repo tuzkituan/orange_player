@@ -1,5 +1,7 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:orange_player/src/components/snackbar.dart';
 import 'package:orange_player/src/components/song_list_view.dart';
 import 'package:orange_player/src/models/playlist_model.dart';
 import 'package:orange_player/src/providers/player_provider.dart';
@@ -43,6 +45,10 @@ class _PlaylistDetailsState extends State<PlaylistDetails> {
             IconButton(
               onPressed: () {
                 Navigator.pop(context);
+                SnackbarComponent.showSuccessSnackbar(
+                  context,
+                  "Playlist deleted",
+                );
                 playlistProvider.deletePlaylist(id: playlist.id);
               },
               icon: const Icon(

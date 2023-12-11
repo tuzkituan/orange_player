@@ -24,6 +24,7 @@ dependencies:
   google_fonts: ^6.1.0
   audio_video_progress_bar: ^2.0.1
   just_audio_background: ^0.0.1-beta.11
+  another_flushbar: ^1.12.30
 
 dev_dependencies:
   flutter_test:

@@ -49,7 +49,7 @@ class PlaylistProvider with ChangeNotifier {
       id: '${DateTime.now().millisecondsSinceEpoch}',
       isDeletable: true,
     ));
-    // notifyListeners();
+    notifyListeners();
     saveToDisk();
     return id;
   }
@@ -66,7 +66,8 @@ class PlaylistProvider with ChangeNotifier {
     if (id == null) {
       return null;
     }
-    return playlistList.firstWhereOrNull((playlist) => playlist.id == id);
+    return playlistList.firstWhereOrNull(
+        (playlist) => playlist.id.toString() == id.toString());
   }
 
   MyPlaylistModel getLikedPlaylist() {
@@ -81,6 +82,16 @@ class PlaylistProvider with ChangeNotifier {
       return;
     }
     find.songIds.add(songId);
+    notifyListeners();
+    saveToDisk();
+  }
+
+  void removeSongFromPlaylist(
+      {required String playlistId, required String songId}) {
+    MyPlaylistModel find = playlistList.firstWhere(
+      (playlist) => playlist.id == playlistId,
+    );
+    find.songIds.remove(songId);
     saveToDisk();
     notifyListeners();
   }

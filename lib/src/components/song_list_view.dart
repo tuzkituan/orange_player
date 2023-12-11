@@ -1,5 +1,7 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:orange_player/src/components/snackbar.dart';
 import 'package:orange_player/src/components/song_thumbnail.dart';
 import 'package:orange_player/src/models/playlist_model.dart';
 import 'package:orange_player/src/providers/player_provider.dart';
@@ -37,11 +39,65 @@ class _SongListViewState extends State<SongListView> {
     );
   }
 
+  void onRemoveFromPlaylist({required String songId}) async {
+    if (widget.playlistId != null) {
+      PlaylistProvider playlistProvider =
+          Provider.of<PlaylistProvider>(context, listen: false);
+      playlistProvider.removeSongFromPlaylist(
+          playlistId: widget.playlistId!, songId: songId);
+      Navigator.pop(context);
+      SnackbarComponent.showSuccessSnackbar(
+        context,
+        "Song removed from playlist",
+        position: FlushbarPosition.BOTTOM,
+      );
+    }
+  }
+
   void displayMenu({
     required SongModel? song,
     required bool isFavorite,
     required void Function({required String songId}) onSetFavorite,
   }) {
+    List<Map<String, dynamic>> menuItems = [
+      {
+        "title": isFavorite ? "Unlike" : "Like",
+        "icon": Icon(
+          isFavorite ? Icons.favorite : Icons.favorite_border_outlined,
+        ),
+        "onTap": () {
+          onSetFavorite(songId: song!.id.toString());
+          Navigator.pop(context);
+          SnackbarComponent.showSuccessSnackbar(
+              context,
+              !isFavorite
+                  ? "Song added to favorites"
+                  : "Song removed from favorites");
+        }
+      },
+      {
+        "title": "Add to playlist",
+        "icon": const Icon(Icons.add),
+        "onTap": () {
+          onAddToPlaylist(
+            songId: song!.id.toString(),
+          );
+        },
+      },
+      if (widget.playlistId != null)
+        {
+          "title": "Remove from playlist",
+          "icon": const Icon(Icons.remove),
+          "onTap": () {
+            onRemoveFromPlaylist(
+              songId: song!.id.toString(),
+            );
+          },
+        },
+    ];
+
+    double childSize = menuItems.length * 0.12;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: false, // set this to true
@@ -52,48 +108,28 @@ class _SongListViewState extends State<SongListView> {
       builder: (_) {
         return DraggableScrollableSheet(
           expand: false,
-          initialChildSize: .25,
-          minChildSize: .25,
-          maxChildSize: .25,
+          initialChildSize: childSize,
+          minChildSize: childSize,
+          maxChildSize: childSize,
           builder: (BuildContext context, ScrollController scrollController) {
             return Column(
               mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                ListTile(
-                  dense: true,
-                  leading: Icon(isFavorite == true
-                      ? Icons.favorite
-                      : Icons.favorite_border_outlined),
-                  title: Text(
-                    isFavorite ? "Unlike" : "Like",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
+              children: menuItems
+                  .map(
+                    (item) => ListTile(
+                      dense: true,
+                      leading: item["icon"],
+                      title: Text(
+                        item["title"],
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                      onTap: item["onTap"],
                     ),
-                  ),
-                  onTap: () {
-                    onSetFavorite(songId: song!.id.toString());
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  dense: true,
-                  minVerticalPadding: 0,
-                  leading: const Icon(Icons.add),
-                  title: const Text(
-                    'Add to playlist',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                    ),
-                  ),
-                  onTap: () {
-                    onAddToPlaylist(
-                      songId: song!.id.toString(),
-                    );
-                  },
-                ),
-              ],
+                  )
+                  .toList(),
             );
           },
         );
@@ -135,7 +171,7 @@ class _SongListViewState extends State<SongListView> {
             highlightColor: Colors.transparent,
           ),
           child: ListTile(
-            minVerticalPadding: 16,
+            minVerticalPadding: 12,
             dense: true,
             contentPadding: const EdgeInsets.only(
               left: COMPONENT_PADDING,
@@ -143,28 +179,37 @@ class _SongListViewState extends State<SongListView> {
               top: 0,
               bottom: 0,
             ),
-            title: Text(
-              widget.songs![index].title,
-              style: TextStyle(
-                color: currentSong != null
-                    ? isSelected
-                        ? PRIMARY_COLOR
-                        : null
-                    : null,
-                fontWeight: FontWeight.w600,
-                fontSize: 15,
+            title: Padding(
+              padding: const EdgeInsets.only(
+                bottom: 4,
               ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
+              child: Text(
+                widget.songs![index].title,
+                style: TextStyle(
+                  color: currentSong != null
+                      ? isSelected
+                          ? PRIMARY_COLOR
+                          : null
+                      : null,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
             ),
-            // subtitle:
-            //     Text(widget.songs[index].artist ?? "No Artist"),
+            subtitle: Text(
+              widget.songs![index].artist ?? "No Artist",
+              style: const TextStyle(
+                fontSize: 13,
+              ),
+            ),
             leading: SizedBox(
-              width: 40,
-              height: 40,
+              width: 44,
+              height: 44,
               child: SongThumbnail(
                 // controller: _audioQuery,
-                // isCircle: true,
+                isCircle: true,
                 currentSong: widget.songs![index],
               ),
             ),
@@ -173,6 +218,7 @@ class _SongListViewState extends State<SongListView> {
               playerProvider.play(
                 song: widget.songs![index],
                 playlistId: widget.playlistId,
+                playlistProvider: playlistProvider,
               );
             },
             trailing: Row(

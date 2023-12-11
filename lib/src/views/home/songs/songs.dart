@@ -123,6 +123,7 @@ class _SongsState extends State<Songs> {
 
     return GradientLayout(
       title: "Songs",
+      icon: const Icon(Icons.music_note_rounded),
       headerChildren: const [],
       children: [
         Padding(

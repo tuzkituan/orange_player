@@ -1,6 +1,7 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:orange_player/src/components/marquee_widget.dart';
+import 'package:orange_player/src/components/snackbar.dart';
 import 'package:orange_player/src/components/song_thumbnail.dart';
 import 'package:orange_player/src/models/playlist_model.dart';
 import 'package:orange_player/src/providers/player_provider.dart';
@@ -37,11 +38,11 @@ class PlayerBar extends StatelessWidget {
       },
       child: Container(
         // height: PLAYER_BAR_HEIGHT,
-        // clipBehavior: Clip.hardEdge,
+        clipBehavior: Clip.hardEdge,
         decoration: BoxDecoration(
-          color: PRIMARY_COLOR.withAlpha(255),
-          borderRadius: const BorderRadius.all(
-            Radius.circular(0),
+          color: PRIMARY_COLOR,
+          borderRadius: BorderRadius.all(
+            Radius.circular(BORDER_RADIUS),
           ),
           // gradient: LinearGradient(
           //   colors: [PRIMARY_COLOR.withOpacity(0.3), Colors.transparent],
@@ -122,6 +123,11 @@ class PlayerBar extends StatelessWidget {
                           playlistProvider.setFavorite(
                             songId: currentSong.id.toString(),
                           );
+                          SnackbarComponent.showSuccessSnackbar(
+                              context,
+                              !isFavorite
+                                  ? "Song added to favorites"
+                                  : "Song removed from favorites");
                         },
                         color: isFavorite ? Colors.white : DARK_BUTTON_COLOR,
                       ),

@@ -5,6 +5,7 @@ import 'package:on_audio_query/on_audio_query.dart';
 import 'package:orange_player/src/components/player_bar.dart';
 import 'package:orange_player/src/providers/player_provider.dart';
 import 'package:orange_player/src/theme/colors.dart';
+import 'package:orange_player/src/theme/variables.dart';
 import 'package:orange_player/src/views/home/playlists/playlists.dart';
 import 'package:orange_player/src/views/home/settings/settings_controller.dart';
 import 'package:orange_player/src/views/home/songs/songs.dart';
@@ -78,8 +79,8 @@ class _HomeState extends State<Home> {
               ),
             if (index == 1) const Playlists(),
             const Positioned(
-              left: 0,
-              right: 0,
+              left: COMPONENT_PADDING / 2,
+              right: COMPONENT_PADDING / 2,
               bottom: 0,
               child: SafeArea(
                 child: PlayerBar(),
@@ -90,7 +91,7 @@ class _HomeState extends State<Home> {
         bottomNavigationBar: ClipRect(
           //I'm using BackdropFilter for the blurring effect
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
+            filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
             child: Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
@@ -115,9 +116,15 @@ class _HomeState extends State<Home> {
                   enableFeedback: false,
                   selectedFontSize: 11,
                   unselectedFontSize: 11,
-                  showSelectedLabels: false,
-                  showUnselectedLabels: false,
-                  iconSize: 24,
+                  showSelectedLabels: true,
+                  showUnselectedLabels: true,
+                  selectedLabelStyle: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  unselectedLabelStyle: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  iconSize: 28,
                   onTap: (value) {
                     setState(() {
                       index = value;
@@ -126,14 +133,14 @@ class _HomeState extends State<Home> {
                   items: const <BottomNavigationBarItem>[
                     BottomNavigationBarItem(
                       icon: Padding(
-                        padding: EdgeInsets.all(0),
+                        padding: EdgeInsets.all(2),
                         child: Icon(Icons.music_note_outlined),
                       ),
                       label: 'Songs',
                     ),
                     BottomNavigationBarItem(
                       icon: Padding(
-                        padding: EdgeInsets.all(0),
+                        padding: EdgeInsets.all(2),
                         child: Icon(Icons.playlist_add_check),
                       ),
                       label: 'Playlists',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:orange_player/src/components/snackbar.dart';
 import 'package:orange_player/src/models/playlist_model.dart';
 import 'package:orange_player/src/providers/playlist_provider.dart';
 import 'package:provider/provider.dart';
@@ -44,6 +45,10 @@ class _AddToPlaylistState extends State<AddToPlaylist> {
               songId: selectedSongId,
             );
             Navigator.pop(context, playlists[index]);
+            SnackbarComponent.showSuccessSnackbar(
+              context,
+              "Song added to playlist ${playlists[index].name}",
+            );
           },
         ),
         separatorBuilder: (itemBuilder, index) => const SizedBox.shrink(),

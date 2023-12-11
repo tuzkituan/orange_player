@@ -29,16 +29,17 @@ class _PlaylistsState extends State<Playlists> {
     return GradientLayout(
       color: PRIMARY_COLOR,
       title: "Playlists",
+      icon: const Icon(Icons.playlist_add_check_rounded),
       actions: [
         IconButton(
           onPressed: onAddPlaylist,
-          iconSize: 32,
+          iconSize: 24,
           icon: const Icon(Icons.add),
         )
       ],
       children: [
         GridView.count(
-          physics: const AlwaysScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: 2,
           crossAxisSpacing: COMPONENT_PADDING,
           mainAxisSpacing: COMPONENT_PADDING,
